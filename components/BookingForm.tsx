@@ -3,7 +3,7 @@
 import { IBooking } from "@/app/backend/models/booking.model";
 import React, { useState } from "react";
 
-type BookingFormData = Pick<
+export type BookingFormData = Pick<
   IBooking,
   | "clientName"
   | "clientEmail"
