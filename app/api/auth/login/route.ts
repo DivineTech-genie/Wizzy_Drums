@@ -16,8 +16,6 @@ export async function POST(request: NextRequest) {
     }
 
     // 1. Verify password using bcrypt
-    // Since the ADMIN_PASSWORD in .env is plain text, we hash it on the fly to match industry validation patterns,
-    // or compare it directly. For single-user convenience, we compare the incoming text to the env variable.
     if (password !== adminPassword) {
       return NextResponse.json(
         { message: "Invalid administrator password." },
@@ -30,7 +28,7 @@ export async function POST(request: NextRequest) {
     const token = await new SignJWT({ role: "admin" })
       .setProtectedHeader({ alg: "HS256" })
       .setIssuedAt()
-      .setExpirationTime("2h") // Token expires automatically in 2 hours
+      .setExpirationTime("2h")
       .sign(secretKey);
 
     // 3. Create response and bake the JWT into a highly secure, HttpOnly cookie
@@ -45,8 +43,8 @@ export async function POST(request: NextRequest) {
       httpOnly: true, // Prevents Javascript from reading the cookie (protects against XSS)
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 60 * 60 * 2, // 2 hours in seconds
-      path: "/", // Valid across the whole site
+      maxAge: 60 * 60 * 2,
+      path: "/",
     });
 
     return response;

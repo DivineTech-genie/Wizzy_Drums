@@ -5,10 +5,8 @@ export async function middleware(request: NextRequest) {
   const token = request.cookies.get("admin_token")?.value;
   const { pathname } = request.nextUrl;
 
-  // 1. If trying to access the admin dashboard
   if (pathname.startsWith("/admin")) {
     if (!token) {
-      // No token found? Redirect them straight to the login page
       return NextResponse.redirect(new URL("/login", request.url));
     }
 
@@ -17,7 +15,6 @@ export async function middleware(request: NextRequest) {
       const secretKey = new TextEncoder().encode(process.env.JWT_SECRET || "");
       await jwtVerify(token, secretKey);
 
-      // Token is valid! Let them pass through
       return NextResponse.next();
     } catch (error) {
       // Token was manipulated or is expired! Redirect to login

@@ -41,7 +41,7 @@ export default function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
         <span className="text-5xl">🥁</span>
         <h2 className="mt-6 text-3xl font-extrabold text-white tracking-tight">
-          Artist Admin Portal
+          Wizzy_Drums Admin Portal
         </h2>
         <p className="mt-2 text-sm text-gray-400">
           Enter your secure passcode to access the logistics deck
