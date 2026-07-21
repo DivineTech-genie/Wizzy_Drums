@@ -1,21 +1,23 @@
-// src/app/page.tsx
-import BookingForm from "@/components/BookingForm";
+import CTA from "@/components/CTA";
+import EventTypes from "@/components/EventTypes";
+import Footer from "@/components/Footer";
+import Hero from "@/components/Hero";
+import HowItWorks from "@/components/HowItWorks";
+import Navbar from "@/components/Navbar";
+import Stats from "@/components/Stats";
+import Testimonials from "@/components/Testimonials";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-      <div className="w-full max-w-4xl text-center mb-8">
-        <h1 className="text-4xl font-extrabold text-gray-900 mb-2">
-          Live Performance Bookings
-        </h1>
-        <p className="text-lg text-gray-600">
-          Enter event details below to submit a live slot request.
-        </p>
-      </div>
-
-      <div className="w-full">
-        <BookingForm />
-      </div>
+    <main className="flex-1">
+      <Navbar />
+      <Hero />
+      <Stats />
+      <HowItWorks />
+      <EventTypes />
+      <Testimonials />
+      <CTA />
+      <Footer />
     </main>
   );
 }
