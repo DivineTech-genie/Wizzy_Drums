@@ -10,7 +10,7 @@ export async function uploadFileToCloudinary(file: File): Promise<string> {
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.message || "Failed to upload file");
+    throw new Error(error.error || "Failed to upload file");
   }
 
   const data = await response.json();

@@ -12,7 +12,7 @@ export async function middleware(request: NextRequest) {
 
     try {
       // Cryptographically verify the token signature
-      const secretKey = new TextEncoder().encode(process.env.JWT_SECRET || "");
+      const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
       await jwtVerify(token, secretKey);
 
       return NextResponse.next();

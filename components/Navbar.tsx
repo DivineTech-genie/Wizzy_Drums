@@ -55,15 +55,17 @@ const Navbar = () => {
               {link.label}
             </Link>
           ))}
-          <Button className="ml-4">
-            <Link href="/book">Get Quote</Link>
-          </Button>
+          <Link href="/book">
+            <Button className="ml-4">Get Quote</Button>
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <button
           className="md:hidden p-2 rounded-lg hover:bg-muted transition-colors"
           onClick={() => setIsOpen(!isOpen)}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+          aria-expanded={isOpen}
         >
           {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
         </button>
@@ -89,11 +91,9 @@ const Navbar = () => {
                   {link.label}
                 </Link>
               ))}
-              <Button className="w-full">
-                <Link href="/book" onClick={() => setIsOpen(false)}>
-                  Get Quote
-                </Link>
-              </Button>
+              <Link href="/book" onClick={() => setIsOpen(false)}>
+                <Button className="w-full">Get Quote</Button>
+              </Link>
             </div>
           </motion.div>
         )}

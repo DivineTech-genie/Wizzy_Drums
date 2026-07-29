@@ -41,7 +41,7 @@ export function TravelLogisticsForm({ form }: { form: UseFormReturn<any> }) {
           {/* Flight Provisions (Controlled Radio Group) */}
           <Controller
             control={form.control}
-            name="flightProvision"
+            name="providesFlight"
             render={({ field, fieldState: { error } }) => (
               <Field data-invalid={!!error} className="space-y-2">
                 <FieldLabel className="text-xs font-bold uppercase text-slate-500">
@@ -54,6 +54,7 @@ export function TravelLogisticsForm({ form }: { form: UseFormReturn<any> }) {
                     // 👇 Update the booleans based on selection
                     form.setValue("providesFlight", val === "provide");
                     form.setValue("cannotAffordFlight", val === "charge");
+                    console.log(val);
                   }}
                   value={field.value}
                   className="flex gap-4"
@@ -87,11 +88,17 @@ export function TravelLogisticsForm({ form }: { form: UseFormReturn<any> }) {
           <Controller
             control={form.control}
             name="requiresAccommodation"
-            render={({ field }) => (
+            render={({ field, fieldState: { error } }) => (
               <Field className="flex items-center space-x-3 pt-2 border-t border-slate-200">
                 <Checkbox
                   id="accommodation"
                   checked={field.value}
+                  onClick={(e) => {
+                    field.onChange(!field.value);
+                    console.log(
+                      `Accommodation checkbox clicked: ${!field.value}`,
+                    );
+                  }}
                   onCheckedChange={field.onChange}
                 />
                 <FieldLabel
