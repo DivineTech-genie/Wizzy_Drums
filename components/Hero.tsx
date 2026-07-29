@@ -62,18 +62,18 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Button size="lg" className="gap-2">
-                <Link href="/book">
+              <Link href="/book">
+                <Button size="lg" className="gap-2">
                   Check Availability
                   <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" className="gap-2">
-                <Link href="#featured">
+                </Button>
+              </Link>
+              <Link href="#featured">
+                <Button size="lg" variant="outline" className="gap-2">
                   <Play className="h-4 w-4" />
                   Watch Reel
-                </Link>
-              </Button>
+                </Button>
+              </Link>
             </motion.div>
 
             {/* Trust Badges */}

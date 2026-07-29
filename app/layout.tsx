@@ -8,6 +8,8 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -60,7 +62,9 @@ export default function RootLayout({
       )}
     >
       <body className="min-h-full flex flex-col bg-background text-foreground font-body">
-        {children}
+        <Navbar />
+        <div className="my-24">{children}</div>
+        <Footer />
       </body>
     </html>
   );
