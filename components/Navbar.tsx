@@ -41,7 +41,10 @@ const Navbar = () => {
           href="/"
           className="flex items-center gap-2 font-heading text-xl font-bold"
         >
-          <span className="text-primary">Stage</span>Book
+          <h1>
+            <span className="text-primary">Wizzy</span>
+            Drums
+          </h1>
         </Link>
 
         {/* Desktop Nav */}

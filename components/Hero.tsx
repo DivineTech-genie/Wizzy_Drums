@@ -105,7 +105,7 @@ const Hero = () => {
             transition={{ duration: 0.8, delay: 0.2 }}
             className="relative"
           >
-            <div className="aspect-square rounded-2xl bg-linear-to-br from-primary/20 to-primary/5 overflow-hidden shadow-2xl">
+            <div className="aspect-square rounded-2xl bg-linear-to from-primary/20 to-primary/5 overflow-hidden shadow-2xl">
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center">
                   <Mic2 className="h-24 w-24 text-primary/30 mx-auto mb-4" />
