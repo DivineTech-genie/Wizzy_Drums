@@ -2,12 +2,7 @@
 
 import { UseFormReturn } from "react-hook-form";
 import { BoldCalendar } from "./BoldCalendar";
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  MapPin,
-  Building2,
-} from "lucide-react";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { CustomInputField } from "../CustomForm";
 
 interface Step1EventDetailsProps {
