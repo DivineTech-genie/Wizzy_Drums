@@ -157,14 +157,24 @@ export function MainBooking() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const result: unknown = await response.json();
 
       if (!response.ok) {
         console.error("Booking API error response:", result);
+        const errorResponse =
+          typeof result === "object" && result !== null
+            ? (result as { error?: unknown; message?: unknown })
+            : null;
+        const error =
+          typeof errorResponse?.error === "string"
+            ? errorResponse.error
+            : undefined;
+        const responseMessage =
+          typeof errorResponse?.message === "string"
+            ? errorResponse.message
+            : undefined;
         const message =
-          (result as any)?.error ||
-          (result as any)?.message ||
-          "Booking failed";
+          error || responseMessage || "Booking failed";
         toast.error(message);
         throw new Error(message);
       }
