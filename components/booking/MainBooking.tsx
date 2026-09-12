@@ -28,6 +28,15 @@ const mockBookedDates = [
   new Date(2026, 7, 1),
 ];
 
+type BookingErrorResponse = {
+  error?: unknown;
+  message?: unknown;
+};
+
+const isBookingErrorResponse = (
+  value: unknown,
+): value is BookingErrorResponse => typeof value === "object" && value !== null;
+
 /** Coordinates the multi-step booking form and submits completed bookings. */
 export function MainBooking() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -157,13 +166,15 @@ export function MainBooking() {
         body: JSON.stringify(data),
       });
 
-      const result = await response.json();
+      const result: unknown = await response.json();
 
       if (!response.ok) {
         console.error("Booking API error response:", result);
+        const errorResponse = isBookingErrorResponse(result) ? result : {};
         const message =
-          (result as any)?.error ||
-          (result as any)?.message ||
+          (typeof errorResponse.error === "string" && errorResponse.error) ||
+          (typeof errorResponse.message === "string" &&
+            errorResponse.message) ||
           "Booking failed";
         toast.error(message);
         throw new Error(message);
