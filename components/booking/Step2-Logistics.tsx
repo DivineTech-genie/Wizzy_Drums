@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Plane, Hotel, MapPin } from "lucide-react";
+import { toast } from "sonner";
 import { TravelLogisticsForm } from "../Travel.logistics";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
 import { isEasternNigeriaState } from "@/lib/eastern-states";
@@ -56,9 +57,15 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     try {
       const url = await uploadFileToCloudinary(file);
       form.setValue("flightTicketUrl", url, { shouldValidate: true });
+      toast.success("Flight ticket uploaded successfully");
     } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to upload flight ticket.";
       console.error("Flight upload error:", error);
-      setUploadError("Failed to upload flight ticket.");
+      setUploadError(message);
+      toast.error(message);
     } finally {
       setUploadingFlight(false);
     }
@@ -76,9 +83,15 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     try {
       const url = await uploadFileToCloudinary(file);
       form.setValue("hotelTicketUrl", url, { shouldValidate: true });
+      toast.success("Hotel confirmation uploaded successfully");
     } catch (error) {
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to upload hotel confirmation.";
       console.error("Hotel upload error:", error);
-      setUploadError("Failed to upload hotel confirmation.");
+      setUploadError(message);
+      toast.error(message);
     } finally {
       setUploadingHotel(false);
     }

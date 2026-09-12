@@ -96,7 +96,7 @@ export function MediaCard({
           </div>
 
           {/* Actions Overlay */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <div className="absolute inset-0 bg-black/60 transition-opacity flex items-center justify-center gap-2">
             <Button size="sm" variant="secondary" className="h-8 gap-1">
               <a href={item.src} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-3 w-3" />

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 
 interface AdminDashboardProps extends BookingFormValues {
@@ -75,8 +76,13 @@ export default function AdminDashboard() {
             : booking,
         ),
       );
+      toast.success(
+        newStatus === "confirmed"
+          ? "Booking confirmed successfully"
+          : "Booking cancelled successfully",
+      );
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to update booking status");
     } finally {
       setActionLoadingId(null);
     }
@@ -89,6 +95,7 @@ export default function AdminDashboard() {
         "Are you sure you want to permanently delete this booking request?",
       )
     ) {
+      toast.info("Booking deletion cancelled");
       return;
     }
 
@@ -108,8 +115,9 @@ export default function AdminDashboard() {
       setBookings((prev) =>
         prev.filter((booking) => booking._id.toString() !== id),
       );
+      toast.success("Booking deleted successfully");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message || "Failed to delete booking");
     } finally {
       setActionLoadingId(null);
     }

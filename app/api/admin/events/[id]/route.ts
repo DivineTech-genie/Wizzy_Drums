@@ -3,6 +3,7 @@ import { connectDB } from "@/app/backend/config/db";
 import EventsOptions from "@/app/backend/models/eventType.model";
 import { verifyAuth } from "@/lib/auth";
 import { eventSchema } from "@/app/backend/validators/events";
+import { deleteCloudinaryFile } from "@/lib/cloudinary";
 
 // GET single event type
 export async function GET(
@@ -88,6 +89,16 @@ export async function DELETE(
 
     await connectDB();
     const { id } = await params;
+
+    const existingEvent = await EventsOptions.findById(id);
+    if (!existingEvent) {
+      return NextResponse.json(
+        { status: "error", message: "Event type not found" },
+        { status: 404 },
+      );
+    }
+
+    await deleteCloudinaryFile(existingEvent.src);
 
     const eventType = await EventsOptions.findByIdAndDelete(id);
 

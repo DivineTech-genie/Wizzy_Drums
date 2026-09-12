@@ -31,7 +31,10 @@ export async function POST(req: NextRequest) {
   try {
     const auth = await verifyAuth(req);
     if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { status: "error", message: "Unauthorized" },
+        { status: 401 },
+      );
     }
 
     await connectDB();
@@ -40,19 +43,27 @@ export async function POST(req: NextRequest) {
 
     if (!validation.success) {
       return NextResponse.json(
-        { status: "error", errors: validation.error.flatten().fieldErrors },
+        {
+          status: "error",
+          message: "Please correct the media form and try again.",
+          errors: validation.error.flatten().fieldErrors,
+        },
         { status: 400 },
       );
     }
 
     const media = await Media.create(validation.data);
     return NextResponse.json(
-      { status: "success", data: media },
+      { status: "success", message: "Media created successfully", data: media },
       { status: 201 },
     );
   } catch (error) {
     return NextResponse.json(
-      { status: "error", message: "Failed to create media" },
+      {
+        status: "error",
+        message:
+          error instanceof Error ? error.message : "Failed to create media",
+      },
       { status: 500 },
     );
   }

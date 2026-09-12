@@ -109,6 +109,8 @@ export function BookingDetailsModal({
     if (confirm("Are you sure you want to cancel this booking?")) {
       onStatusChange?.(booking._id, "cancelled", adminNote);
       toast.success("Booking cancelled");
+    } else {
+      toast.info("Booking cancellation was skipped");
     }
   };
 

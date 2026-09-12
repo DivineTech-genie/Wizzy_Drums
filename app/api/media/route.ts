@@ -29,7 +29,10 @@ export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
     if (!auth) {
-      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+      return NextResponse.json(
+        { status: "error", message: "Unauthorized" },
+        { status: 401 },
+      );
     }
     await connectDB();
     const body = await request.json();
@@ -42,13 +45,20 @@ export async function POST(request: NextRequest) {
     const newMedia = await Media.create(body);
 
     return NextResponse.json(
-      { success: true, data: newMedia },
+      {
+        status: "success",
+        message: "Media created successfully",
+        data: newMedia,
+      },
       { status: 201 },
     );
   } catch (error: any) {
     console.error(" Media POST Error:", error);
     return NextResponse.json(
-      { success: false, error: error.message },
+      {
+        status: "error",
+        message: error?.message || "Failed to create media",
+      },
       { status: 500 },
     );
   }

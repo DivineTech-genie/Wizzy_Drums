@@ -73,7 +73,10 @@ export function useEvents() {
   };
 
   const deleteEvent = async (id: string) => {
-    if (!confirm("Delete this event type?")) return { success: false };
+    if (!confirm("Delete this event type?")) {
+      toast.info("Event deletion cancelled");
+      return { success: false };
+    }
 
     try {
       const res = await fetch(`/api/admin/events/${id}`, {

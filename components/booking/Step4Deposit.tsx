@@ -2,6 +2,7 @@
 
 import { UseFormReturn, useWatch } from "react-hook-form";
 import { Check, Plane } from "lucide-react";
+import { toast } from "sonner";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { Checkbox } from "@/components/ui/checkbox";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
@@ -47,8 +48,12 @@ export function Step4Deposit({ form }: Step4DepositProps) {
     try {
       const url = await uploadFileToCloudinary(file);
       form.setValue("depositReceiptUrl", url, { shouldValidate: true });
+      toast.success("Deposit receipt uploaded successfully");
     } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to upload receipt.";
       console.error("Receipt upload error", err);
+      toast.error(message);
     } finally {
       setUploadingReceipt(false);
     }
@@ -64,7 +69,15 @@ export function Step4Deposit({ form }: Step4DepositProps) {
   useEffect(() => {
     fetch("/api/admin/settings")
       .then((r) => r.json())
-      .then((d) => d.data?.bankDetails && setBankDetails(d.data.bankDetails));
+      .then((d) => {
+        if (d?.data?.bankDetails) {
+          setBankDetails(d.data.bankDetails);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load bank details:", error);
+        toast.error("Unable to load bank details right now");
+      });
   }, []);
 
   return (
