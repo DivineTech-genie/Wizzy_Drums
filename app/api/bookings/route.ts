@@ -1,6 +1,6 @@
 import { connectDB } from "@/app/backend/config/db";
 import Booking from "@/app/backend/models/booking.model";
-import { CreateBookingSchema } from "@/app/backend/validators/validators";
+import { BookingFormSchema } from "@/app/backend/validators/validators";
 import { NextResponse, NextRequest } from "next/server";
 
 export async function GET() {
@@ -13,6 +13,7 @@ export async function GET() {
       { status: 200 },
     );
   } catch (error: any) {
+    console.error("GET /api/bookings error:", error);
     return NextResponse.json(
       {
         status: "error",
@@ -30,7 +31,7 @@ export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const rawData = await req.json();
-    const validationResult = CreateBookingSchema.safeParse(rawData);
+    const validationResult = BookingFormSchema.safeParse(rawData);
 
     // 1. Validation Fail (HTTP 400 Bad Request)
     if (!validationResult.success) {
@@ -68,6 +69,42 @@ export async function POST(req: NextRequest) {
       eventDate: targetDate,
     });
 
+    // Send confirmation email (non-blocking)
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-email`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        clientEmail: newBooking.clientEmail,
+        clientName: newBooking.clientName,
+        eventType: newBooking.eventType,
+        eventDate: newBooking.eventDate,
+        eventLocation: newBooking.eventLocation,
+      }),
+    }).catch((err) => console.error("Failed to send email:", err));
+
+    // Send email to admin
+    const adminEmail = process.env.ADMIN_EMAIL || "admin@stagebook.com";
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-admin-notification`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        to: adminEmail,
+        booking: newBooking,
+      }),
+    }).catch((err) => console.error("Failed to send admin email:", err));
+
+    // Also create in-app notification
+    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/notifications`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        title: "New Booking!",
+        message: `${newBooking.clientName} just booked a ${newBooking.eventType} event on ${new Date(newBooking.eventDate).toLocaleDateString()}`,
+        type: "booking",
+        link: `/admin/bookings/${newBooking._id}`,
+      }),
+    }).catch((err) => console.error("Failed to create notification:", err));
+
     // 3. Successful Creation (HTTP 201 Created)
     if (newBooking) {
       return NextResponse.json(
@@ -88,11 +125,14 @@ export async function POST(req: NextRequest) {
       );
     }
   } catch (error) {
+    console.error("POST /api/bookings error:", error);
     return NextResponse.json(
       {
         status: "error",
         message: "Internal server error.",
         error: error instanceof Error ? error.message : String(error),
+        // Include stack in development to aid debugging
+        stack: error instanceof Error ? error.stack : undefined,
       },
       { status: 500 }, // <--- Real HTTP 500
     );

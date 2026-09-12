@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookingFormData } from "./BookingForm";
+import { BookingFormValues } from "@/app/backend/validators/validators";
 
-interface AdminDashboardProps extends BookingFormData {
+interface AdminDashboardProps extends BookingFormValues {
   _id: string;
   status: "pending" | "confirmed" | "cancelled";
 }

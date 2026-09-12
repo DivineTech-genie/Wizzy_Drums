@@ -1,44 +1,50 @@
-// app/api/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { cloudinary } from "@/lib/cloudinary";
 
 export async function POST(req: NextRequest) {
   try {
-    // Get the uploaded file from the form data
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
+    const folder = (formData.get("folder") as string) || "bookings";
 
     if (!file) {
       return NextResponse.json({ error: "No file provided" }, { status: 400 });
     }
 
-    // Validate file type (allow images and PDFs)
+    // Validate file type - support images, videos, and PDFs
     const validTypes = [
       "image/jpeg",
       "image/png",
       "image/webp",
+      "image/gif",
+      "video/mp4",
+      "video/webm",
+      "video/quicktime",
       "application/pdf",
     ];
+
     if (!validTypes.includes(file.type)) {
       return NextResponse.json(
         {
           error:
-            "Invalid file type. Only JPEG, PNG, WebP, and PDF are allowed.",
+            "Invalid file type. Only images, videos, and PDFs are allowed.",
         },
         { status: 400 },
       );
     }
 
-    // Validate file size (limit to 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB in bytes
+    // Validate file size - 20MB for videos, 5MB for images
+    const maxSize = file.type.startsWith("video/")
+      ? 20 * 1024 * 1024
+      : 5 * 1024 * 1024;
     if (file.size > maxSize) {
       return NextResponse.json(
-        { error: "File size exceeds 5MB limit." },
+        { error: `File size exceeds ${maxSize / (1024 * 1024)}MB limit.` },
         { status: 400 },
       );
     }
 
-    // Convert the file to a buffer for Cloudinary upload
+    // Convert the file to a buffer
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
@@ -46,37 +52,63 @@ export async function POST(req: NextRequest) {
     const result = await new Promise((resolve, reject) => {
       const uploadStream = cloudinary.uploader.upload_stream(
         {
-          folder: process.env.CLOUDINARY_UPLOAD_FOLDER || "bookings",
-          resource_type: "auto", // Let Cloudinary detect the type
+          folder: folder,
+          resource_type: "auto",
+          // For videos, generate a thumbnail
+          eager: file.type.startsWith("video/")
+            ? [
+                {
+                  format: "jpg",
+                  transformation: [{ width: 600, crop: "fill" }],
+                },
+              ]
+            : undefined,
         },
         (error, result) => {
           if (error) reject(error);
           else resolve(result);
         },
       );
-      // Write the buffer to the upload stream
       uploadStream.end(buffer);
     });
 
-    // Type assertion – we know the result has secure_url
-    const secureUrl = (result as any).secure_url as string;
+    const uploadResult = result as {
+      secure_url?: string;
+      eager?: [{ secure_url: string }];
+    };
+    const secureUrl = uploadResult?.secure_url;
+
+    // Get thumbnail URL if it's a video
+    let thumbnailUrl = undefined;
+    if (
+      file.type.startsWith("video/") &&
+      uploadResult?.eager?.[0]?.secure_url
+    ) {
+      thumbnailUrl = uploadResult.eager[0].secure_url;
+    }
+
+    if (!secureUrl) {
+      throw new Error("Cloudinary upload did not return a secure URL.");
+    }
 
     return NextResponse.json(
-      { secure_url: secureUrl, message: "Upload successful" },
+      {
+        secure_url: secureUrl,
+        thumbnail_url: thumbnailUrl,
+        message: "Upload successful",
+      },
       { status: 200 },
     );
   } catch (error) {
     console.error("Upload error:", error);
-    return NextResponse.json(
-      { error: "Internal server error" },
-      { status: 500 },
-    );
+    const message =
+      error instanceof Error ? error.message : "Internal server error";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }
 
-// Optionally, limit the API to only handle POST requests
 export const config = {
   api: {
-    bodyParser: false, // Disable Next.js body parsing so we can handle FormData ourselves
+    bodyParser: false,
   },
 };

@@ -1,5 +1,6 @@
 import { connectDB } from "@/app/backend/config/db";
 import Booking from "@/app/backend/models/booking.model";
+import { verifyAuth } from "@/lib/auth";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -13,6 +14,11 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+    const auth = await verifyAuth(req);
+    if (!auth) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectDB();
 
     const { id } = await params;
@@ -60,6 +66,12 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
+
+    const auth = await verifyAuth(request);
+    if (!auth) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+
     await connectDB();
 
     const { id } = await params;

@@ -4,20 +4,21 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CreateBookingSchema } from "@/app/backend/validators/validators";
+import {
+  BookingFormSchema,
+  BookingFormValues,
+} from "@/app/backend/validators/validators";
 import { StepIndicator } from "./StepIndicator";
 import { Step1EventDetails } from "./Step1-EventDetails";
 import { Step2Logistics } from "./Step2-Logistics";
 import { Step3ClientInfo } from "./Step3-ClientInfo";
+import { Step4Deposit } from "./Step4Deposit";
 import { Step4Review } from "./Step4-Review";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 // Extend the schema to include specialRequests and termsAccepted
-const ExtendedBookingSchema = CreateBookingSchema.extend({
-  specialRequests: z.string().optional(),
-  termsAccepted: z.boolean().default(false),
-});
+const ExtendedBookingSchema = BookingFormSchema;
 
 // Mock booked dates - replace with API call
 const mockBookedDates = [
@@ -32,10 +33,16 @@ export function MainBooking() {
   const [successMessage, setSuccessMessage] = useState("");
   const [bookedDates, setBookedDates] = useState<Date[]>(mockBookedDates);
 
-  const totalSteps = 4;
-  const stepLabels = ["Event Details", "Logistics", "Your Info", "Review"];
+  const totalSteps = 5;
+  const stepLabels = [
+    "Event Details",
+    "Logistics",
+    "Your Info",
+    "Deposit",
+    "Review",
+  ];
 
-  const form = useForm<z.input<typeof ExtendedBookingSchema>>({
+  const form = useForm<BookingFormValues>({
     resolver: zodResolver(ExtendedBookingSchema),
     defaultValues: {
       clientName: "",
@@ -53,8 +60,10 @@ export function MainBooking() {
       flightTicketUrl: null,
       hotelTicketUrl: null,
       specialRequests: "",
+      depositConfirmed: false,
+      depositReceiptUrl: null,
       termsAccepted: false,
-    },
+    } as BookingFormValues,
   });
 
   // Fetch booked dates from API
@@ -124,6 +133,8 @@ export function MainBooking() {
       case 3:
         return ["clientName", "clientEmail", "clientPhone"];
       case 4:
+        return ["depositConfirmed", "depositReceiptUrl"];
+      case 5:
         return ["termsAccepted"];
       default:
         return [];
@@ -147,16 +158,20 @@ export function MainBooking() {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Booking failed");
+        console.error("Booking API error response:", result);
+        // Prefer the detailed `error` field returned by the API when present
+        throw new Error((result as any).error || result.message || "Booking failed");
       }
 
       setSuccessMessage("Booking submitted successfully! 🎉");
+      
       form.reset();
       setCurrentStep(1);
     } catch (error) {
       console.error("Submission error:", error);
+      const message = error instanceof Error ? error.message : "Failed to submit booking. Please try again.";
       form.setError("root", {
-        message: "Failed to submit booking. Please try again.",
+        message,
       });
     } finally {
       setIsLoading(false);
@@ -178,6 +193,8 @@ export function MainBooking() {
       case 3:
         return <Step3ClientInfo form={form} />;
       case 4:
+        return <Step4Deposit form={form} />;
+      case 5:
         return (
           <Step4Review
             form={form}

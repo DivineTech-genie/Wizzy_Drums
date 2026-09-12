@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { z } from "zod";
 import { Plane, Hotel, MapPin } from "lucide-react";
 import { TravelLogisticsForm } from "../Travel.logistics";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
-import { CreateBookingSchema } from "@/app/backend/validators/validators";
+import { isEasternNigeriaState } from "@/lib/eastern-states";
+import { BookingFormValues } from "@/app/backend/validators/validators";
+import { useBookingPricing } from "@/hooks/useBookingPricing";
 
 interface Step2LogisticsProps {
-  form: UseFormReturn<z.input<typeof CreateBookingSchema>>;
+  form: UseFormReturn<BookingFormValues>;
 }
 
 export function Step2Logistics({ form }: Step2LogisticsProps) {
@@ -17,12 +18,31 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
   const [uploadingHotel, setUploadingHotel] = useState(false);
   const [uploadError, setUploadError] = useState("");
 
-  const eventState = useWatch({ control: form.control, name: "eventState" });
-  const eventCountry = useWatch({
+  const eventType =
+    useWatch({ control: form.control, name: "eventType" }) || "Wedding";
+  const cannotAffordFlight = useWatch({
     control: form.control,
-    name: "eventCountry",
+    name: "cannotAffordFlight",
   });
+  const providesFlight = form.watch("providesFlight");
+  const eventState =
+    useWatch({ control: form.control, name: "eventState" }) || "";
+  const eventCountry =
+    useWatch({ control: form.control, name: "eventCountry" }) || "";
   const eventDate = useWatch({ control: form.control, name: "eventDate" });
+
+  // 🔥 Use the pricing hook
+  const {
+    eventPrice,
+    depositRate,
+    depositAmount,
+    flightDepositAmount,
+    totalDeposit,
+    isLoading,
+  } = useBookingPricing(eventType, cannotAffordFlight);
+
+  const isEastern = isEasternNigeriaState(eventState);
+  const requiresFlightUpload = !!providesFlight;
 
   const handleFlightFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -64,7 +84,6 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     }
   };
 
-  // Format date for display
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "";
     const date = new Date(dateStr);
@@ -73,6 +92,21 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     const year = date.getFullYear();
     return `${day}/${month}/${year}`;
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-heading font-bold">
+            Travel & Logistics
+          </h2>
+          <p className="text-muted-foreground text-sm">Loading pricing...</p>
+        </div>
+        <div className="h-40 bg-gray-200 rounded-xl animate-pulse" />
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-8">
@@ -101,12 +135,47 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
             </div>
           )}
         </div>
+
+        <div className="mt-4 rounded-3xl border border-primary/10 bg-white p-4 shadow-sm">
+          <p className="text-xs uppercase tracking-[0.18em] text-muted-foreground">
+            Booking quote
+          </p>
+          <p className="mt-2 text-2xl font-heading font-bold text-primary">
+            ₦{eventPrice.toLocaleString()}
+          </p>
+          <p className="text-sm text-muted-foreground mt-1">
+            Estimated fee. A {depositRate}% deposit of ₦
+            {depositAmount.toLocaleString()} will secure your date.
+          </p>
+        </div>
       </div>
 
       {/* Logistics Section */}
       <TravelLogisticsForm form={form} />
 
-      {eventState && eventState.trim().toLowerCase() !== "enugu" && (
+      {eventState.trim() !== "" &&
+        !isEastern &&
+        !providesFlight &&
+        !cannotAffordFlight && (
+          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
+            ⚠️ Please choose a flight arrangement option. If you cannot provide
+            flights, select &quot;Charge flights to quote&quot; and an
+            additional flight deposit will be included.
+          </div>
+        )}
+
+      {cannotAffordFlight && (
+        <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 text-primary-900">
+          <p className="font-medium">Flight deposit included</p>
+          <p className="text-sm text-muted-foreground">
+            Because you chose to charge flights to the quote, an additional
+            deposit of ₦{flightDepositAmount.toLocaleString()} will be added to
+            your booking deposit.
+          </p>
+        </div>
+      )}
+
+      {requiresFlightUpload && (
         <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-4">
           {uploadError ? (
             <p className="text-sm text-destructive">{uploadError}</p>
@@ -133,26 +202,28 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
             )}
           </div>
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Upload hotel confirmation
-            </label>
-            <input
-              type="file"
-              accept=".pdf,image/*"
-              onChange={handleHotelFileUpload}
-              disabled={uploadingHotel}
-              className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
-            />
-            {uploadingHotel && (
-              <p className="mt-1 text-xs text-primary">Uploading...</p>
-            )}
-            {form.watch("hotelTicketUrl") && (
-              <p className="mt-1 text-xs text-green-600">
-                ✅ Hotel confirmation uploaded
-              </p>
-            )}
-          </div>
+          {(form.watch("requiresAccommodation") || requiresFlightUpload) && (
+            <div>
+              <label className="mb-1 block text-sm font-medium">
+                Upload hotel confirmation
+              </label>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={handleHotelFileUpload}
+                disabled={uploadingHotel}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+              />
+              {uploadingHotel && (
+                <p className="mt-1 text-xs text-primary">Uploading...</p>
+              )}
+              {form.watch("hotelTicketUrl") && (
+                <p className="mt-1 text-xs text-green-600">
+                  ✅ Hotel confirmation uploaded
+                </p>
+              )}
+            </div>
+          )}
         </div>
       )}
 
@@ -163,9 +234,9 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
           <div>
             <p className="text-sm font-medium">Flight Arrangement</p>
             <p className="text-xs text-muted-foreground">
-              {form.watch("providesFlight")
+              {providesFlight
                 ? "You will provide flight tickets"
-                : form.watch("cannotAffordFlight")
+                : cannotAffordFlight
                   ? "Charge flights to booking quote"
                   : "Not specified"}
             </p>

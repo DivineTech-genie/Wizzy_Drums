@@ -1,9 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { motion } from "framer-motion";
 import {
-  Mic2,
   Users,
   Calendar,
   MapPin,
@@ -45,9 +45,9 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="flex-1 pt-20">
+    <main className="flex-1 pt-24">
       {/* Hero */}
-      <section className="relative py-16 bg-gradient-to from-primary/5 via-background to-background">
+      <section className="relative md:py-16 bg-gradient-to from-primary/5 via-background to-background">
         <div className="container-custom text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
@@ -63,7 +63,8 @@ export default function AboutPage() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="text-muted-foreground max-w-2xl mx-auto"
           >
-            Passionate performer bringing energy, creativity, and world-class entertainment to every stage.
+            Passionate performer bringing energy, creativity, and world-class
+            entertainment to every stage.
           </motion.p>
         </div>
       </section>
@@ -81,19 +82,22 @@ export default function AboutPage() {
             <h2 className="heading-md mb-4">Who We Are</h2>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                We are a professional live performance collective based in Nigeria, dedicated to
-                delivering unforgettable experiences across weddings, corporate galas, festivals, and
-                nightclub events.
+                We are a professional live performance collective based in
+                Nigeria, dedicated to delivering unforgettable experiences
+                across weddings, corporate galas, festivals, and nightclub
+                events.
               </p>
               <p>
-                With over a decade of stage experience, we&apos;ve performed for thousands of guests
-                across 30+ cities nationwide. Our repertoire spans Afrobeat, R&B, highlife, and
-                contemporary pop — tailored to your event&apos;s vibe.
+                With over a decade of stage experience, we&apos;ve performed for
+                thousands of guests across 30+ cities nationwide. Our repertoire
+                spans Afrobeat, R&B, highlife, and contemporary pop — tailored
+                to your event&apos;s vibe.
               </p>
               <p>
-                We pride ourselves on seamless logistics, punctual execution, and genuine audience
-                connection. From intimate gatherings to large-scale festivals, we bring the energy
-                that makes events memorable.
+                We pride ourselves on seamless logistics, punctual execution,
+                and genuine audience connection. From intimate gatherings to
+                large-scale festivals, we bring the energy that makes events
+                memorable.
               </p>
             </div>
 
@@ -116,10 +120,14 @@ export default function AboutPage() {
             className="order-1 md:order-2"
           >
             <div className="relative aspect-square rounded-2xl overflow-hidden bg-gradient-to from-primary/20 to-primary/5 flex items-center justify-center shadow-xl">
-              <div className="text-center">
-                <Mic2 className="h-24 w-24 text-primary/30 mx-auto mb-4" />
-                <p className="text-muted-foreground text-sm">Artist Photo Placeholder</p>
-              </div>
+              <Image
+                src="/images/gallery/performance-1.jpeg"
+                alt="Artist photo"
+                width={1200}
+                height={1200}
+                sizes="(min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw"
+                className="w-full h-full object-cover object-top"
+              />
             </div>
           </motion.div>
         </div>
@@ -165,10 +173,12 @@ export default function AboutPage() {
                 <FileText className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-heading text-xl font-semibold mb-2">Press Kit</h3>
+                <h3 className="font-heading text-xl font-semibold mb-2">
+                  Press Kit
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Download our complete press kit including bio, high-res photos, and media assets for
-                  event promotion.
+                  Download our complete press kit including bio, high-res
+                  photos, and media assets for event promotion.
                 </p>
                 <Button className="gap-2">
                   <a href="/press-kit.pdf" download>
@@ -193,10 +203,12 @@ export default function AboutPage() {
                 <FileText className="h-6 w-6 text-primary" />
               </div>
               <div className="flex-1">
-                <h3 className="font-heading text-xl font-semibold mb-2">Tech Rider</h3>
+                <h3 className="font-heading text-xl font-semibold mb-2">
+                  Tech Rider
+                </h3>
                 <p className="text-sm text-muted-foreground mb-4">
-                  Download our technical rider with stage requirements, PA specs, and equipment list
-                  for seamless event production.
+                  Download our technical rider with stage requirements, PA
+                  specs, and equipment list for seamless event production.
                 </p>
                 <Button className="gap-2" variant="outline">
                   <a href="/tech-rider.pdf" download>
@@ -220,7 +232,9 @@ export default function AboutPage() {
             viewport={{ once: true }}
             className="max-w-3xl mx-auto"
           >
-            <h2 className="heading-md text-center mb-8">Technical Requirements</h2>
+            <h2 className="heading-md text-center mb-8">
+              Technical Requirements
+            </h2>
             <Card>
               <CardContent className="p-6 grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {techRiderItems.map((item) => (
@@ -248,12 +262,18 @@ export default function AboutPage() {
           className="text-center max-w-2xl mx-auto mb-12"
         >
           <h2 className="heading-md mb-4">Trusted By</h2>
-          <p className="text-muted-foreground">We&apos;ve performed for these prestigious organizations and events.</p>
+          <p className="text-muted-foreground">
+            We&apos;ve performed for these prestigious organizations and events.
+          </p>
         </motion.div>
 
         <div className="flex flex-wrap justify-center gap-4">
           {notableClients.map((client) => (
-            <Badge key={client} variant="secondary" className="px-4 py-2 text-sm">
+            <Badge
+              key={client}
+              variant="secondary"
+              className="px-4 py-2 text-sm"
+            >
               {client}
             </Badge>
           ))}
@@ -261,7 +281,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="container-custom pb-20">
+      <section className="container-custom pb-8">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}

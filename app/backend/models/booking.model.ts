@@ -1,4 +1,5 @@
 import { Schema, model, Document, models } from "mongoose";
+import { isEasternNigeriaState } from "../../../lib/eastern-states";
 
 export interface IBooking extends Document {
   clientName: string;
@@ -16,6 +17,7 @@ export interface IBooking extends Document {
   requiresAccommodation: boolean;
   flightTicketUrl?: string | null;
   hotelTicketUrl?: string | null;
+  depositReceiptUrl?: string | null;
   // logisticsVerified: boolean;
 }
 
@@ -46,14 +48,26 @@ const bookingSchema = new Schema<IBooking>(
     // Secure Document Upload URLs
     flightTicketUrl: { type: String, default: null },
     hotelTicketUrl: { type: String, default: null },
-
-    // Admin Audit Status
-    // logisticsVerified: { type: Boolean, default: false },
+    depositReceiptUrl: { type: String, default: null },
   },
   {
     timestamps: true,
   },
 );
+
+// Conditional validation: require one flight-related flag when eventState is outside eastern region
+bookingSchema.pre("validate", function () {
+  const doc = this as IBooking;
+  const isEastern = isEasternNigeriaState(doc.eventState || "");
+  if (!isEastern) {
+    if (!doc.providesFlight && !doc.cannotAffordFlight) {
+      // Throwing an Error here will cause Mongoose validation to fail
+      throw new Error(
+        "For events outside the eastern region, either providesFlight or cannotAffordFlight must be checked",
+      );
+    }
+  }
+});
 
 const Booking = models.Booking || model<IBooking>("Booking", bookingSchema);
 

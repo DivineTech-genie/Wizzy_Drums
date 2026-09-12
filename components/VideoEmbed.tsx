@@ -21,25 +21,6 @@ export function VideoEmbed({
 }: VideoEmbedProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
-  // Extract YouTube/Vimeo embed URL
-  const getEmbedUrl = (url: string) => {
-    if (url.includes("youtube.com/watch?v=")) {
-      const videoId = url.split("v=")[1]?.split("&")[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (url.includes("youtu.be/")) {
-      const videoId = url.split("youtu.be/")[1]?.split("?")[0];
-      return `https://www.youtube.com/embed/${videoId}`;
-    }
-    if (url.includes("vimeo.com/")) {
-      const videoId = url.split("vimeo.com/")[1]?.split("/")[0];
-      return `https://player.vimeo.com/video/${videoId}`;
-    }
-    return url;
-  };
-
-  const embedUrl = getEmbedUrl(src);
-
   if (!isPlaying) {
     return (
       <div
@@ -53,9 +34,10 @@ export function VideoEmbed({
           <Image
             src={thumbnail}
             alt={title}
-            width={100}
-            height={100}
-            className="w-full h-full object-cover"
+            width={1000}
+            height={1000}
+            sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+            className="w-full h-full object-cover object-center"
           />
         ) : (
           <div className="w-full h-full bg-muted flex items-center justify-center">
@@ -76,12 +58,13 @@ export function VideoEmbed({
 
   return (
     <div className={cn("aspect-video rounded-lg overflow-hidden", className)}>
-      <iframe
-        src={embedUrl}
-        title={title}
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen
-        className="w-full h-full"
+      <video
+        src={src}
+        controls
+        autoPlay
+        playsInline
+        className="w-full h-full object-contain bg-black"
+        poster={thumbnail}
       />
     </div>
   );

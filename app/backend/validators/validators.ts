@@ -1,5 +1,6 @@
 // app/backend/validators/validators.ts
 import { z } from "zod";
+import { isEasternNigeriaState } from "../../../lib/eastern-states";
 
 export const CreateBookingSchema = z
   .object({
@@ -23,15 +24,35 @@ export const CreateBookingSchema = z
     providesFlight: z.boolean().default(false),
     cannotAffordFlight: z.boolean().default(false),
     requiresAccommodation: z.boolean().default(false),
+    depositConfirmed: z.boolean().default(false),
     flightTicketUrl: z.string().url().optional().nullable(),
     hotelTicketUrl: z.string().url().optional().nullable(),
   })
   .superRefine((data, ctx) => {
+    const eventCountry = data.eventCountry.trim().toLowerCase();
+    const eventState = data.eventState.trim().toLowerCase();
+    const isEastern = isEasternNigeriaState(eventState);
+    const outsideEasternNigeria = eventCountry !== "nigeria" || !isEastern;
+
     if (data.providesFlight && !data.flightTicketUrl?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
         path: ["flightTicketUrl"],
         message: "Flight ticket URL is required when you will provide flights",
+      });
+    }
+
+    // Require a flight arrangement only for bookings outside Eastern Nigeria
+    if (
+      !isEastern &&
+      outsideEasternNigeria &&
+      !data.providesFlight &&
+      !data.cannotAffordFlight
+    ) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["providesFlight"],
+        message: "Please choose a flight arrangement option.",
       });
     }
 
@@ -42,4 +63,30 @@ export const CreateBookingSchema = z
         message: "Hotel ticket URL is required when accommodation is required",
       });
     }
+
+    if (!data.depositConfirmed) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["depositConfirmed"],
+        message: "Please confirm the deposit to lock your event date.",
+      });
+    }
   });
+
+// end of CreateBookingSchema.superRefine
+
+export const BookingFormSchema = CreateBookingSchema.extend({
+  specialRequests: z.string().optional(),
+  termsAccepted: z.boolean().default(false),
+  depositReceiptUrl: z.string().url().optional().nullable(),
+}).superRefine((data, ctx) => {
+  if (data.depositConfirmed && !data.depositReceiptUrl?.trim()) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["depositReceiptUrl"],
+      message: "Please upload a deposit receipt to secure the booking.",
+    });
+  }
+});
+
+export type BookingFormValues = z.input<typeof BookingFormSchema>;

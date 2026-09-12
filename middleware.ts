@@ -1,31 +1,78 @@
-import { NextRequest, NextResponse } from "next/server";
+// middleware.ts
+import { NextResponse } from "next/server";
+import type { NextRequest } from "next/server";
 import { jwtVerify } from "jose";
 
+const JWT_SECRET = process.env.JWT_SECRET || "your-jwt-secret-here";
+
+// Paths that don't require authentication
+const PUBLIC_PATHS = ["/login", "/api/auth/login", "/api/auth/logout"];
+
 export async function middleware(request: NextRequest) {
+  const path = request.nextUrl.pathname;
+
+  const isPublic = PUBLIC_PATHS.some(
+    (p) => path === p || path.startsWith(p + "/"),
+  );
+  const isApiRoute = path.startsWith("/api/");
   const token = request.cookies.get("admin_token")?.value;
-  const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/admin")) {
-    if (!token) {
-      return NextResponse.redirect(new URL("/login", request.url));
+  // ==================================================
+  // 1. Handle PUBLIC paths
+  // ==================================================
+  if (isPublic) {
+    // If user is already authenticated and hits /login, send to dashboard
+    if (path === "/login" && token) {
+      try {
+        await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
+        return NextResponse.redirect(new URL("/admin", request.url));
+      } catch {
+        // Token invalid — let them see login page, clear bad cookie
+        const response = NextResponse.next();
+        response.cookies.delete("admin_token");
+        return response;
+      }
     }
-
-    try {
-      // Cryptographically verify the token signature
-      const secretKey = new TextEncoder().encode(process.env.JWT_SECRET);
-      await jwtVerify(token, secretKey);
-
-      return NextResponse.next();
-    } catch (error) {
-      // Token was manipulated or is expired! Redirect to login
-      return NextResponse.redirect(new URL("/login", request.url));
-    }
+    return NextResponse.next();
   }
 
-  return NextResponse.next();
+  // ==================================================
+  // 2. Handle PROTECTED paths (everything else in matcher)
+  // ==================================================
+  if (!token) {
+    if (isApiRoute) {
+      return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
+    }
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  try {
+    await jwtVerify(token, new TextEncoder().encode(JWT_SECRET));
+    return NextResponse.next();
+  } catch {
+    // Token invalid or expired
+    if (isApiRoute) {
+      const response = NextResponse.json(
+        { message: "Invalid or expired token" },
+        { status: 401 },
+      );
+      response.cookies.delete("admin_token");
+      return response;
+    }
+
+    const response = NextResponse.redirect(new URL("/login", request.url));
+    response.cookies.delete("admin_token");
+    return response;
+  }
 }
 
-// Configure the middleware to only run on admin routes (keeps public pages fast!)
 export const config = {
-  matcher: ["/admin/:path*"],
+  matcher: [
+    // Protected pages
+    "/admin/:path*",
+    // Protected API routes
+    "/api/admin/:path*",
+    // Login page (to redirect authenticated users away)
+    "/login",
+  ],
 };
