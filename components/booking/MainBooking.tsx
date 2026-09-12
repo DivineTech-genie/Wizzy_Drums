@@ -28,6 +28,7 @@ const mockBookedDates = [
   new Date(2026, 7, 1),
 ];
 
+/** Coordinates the multi-step booking form and submits completed bookings. */
 export function MainBooking() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);

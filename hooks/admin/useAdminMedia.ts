@@ -5,6 +5,7 @@ import { MediaItem } from "@/app/backend/validators/media";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
+/** Loads media for a category and exposes administrative mutation helpers. */
 export function useMedia(category: string = "photos") {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);

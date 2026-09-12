@@ -24,7 +24,7 @@ export async function GET(
   }
 }
 
-// UPDATE media
+/** Updates an authenticated media item and cleans up replaced assets. */
 export async function PUT(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -88,7 +88,7 @@ export async function PUT(
   }
 }
 
-// DELETE media
+/** Deletes an authenticated media item and its associated assets. */
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

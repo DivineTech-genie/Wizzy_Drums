@@ -76,7 +76,7 @@ export async function PUT(
   }
 }
 
-// DELETE event type
+/** Deletes an authenticated event type and its associated Cloudinary asset. */
 export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

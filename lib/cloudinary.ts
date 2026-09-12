@@ -20,6 +20,7 @@ cloudinary.config({
   secure: true,
 });
 
+/** Extracts a Cloudinary public ID from a delivery URL when possible. */
 export const getCloudinaryPublicId = (url?: string | null): string | null => {
   if (!url) return null;
 
@@ -35,6 +36,7 @@ export const getCloudinaryPublicId = (url?: string | null): string | null => {
   }
 };
 
+/** Deletes a Cloudinary asset identified by its delivery URL. */
 export const deleteCloudinaryFile = async (
   url?: string | null,
 ): Promise<boolean> => {

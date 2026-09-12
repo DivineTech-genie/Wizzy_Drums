@@ -62,6 +62,7 @@ export async function PATCH(
   }
 }
 
+/** Deletes an authenticated booking and its uploaded supporting documents. */
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
