@@ -1,17 +1,16 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { UseFormReturn, Controller } from "react-hook-form";
 import { BoldCalendar } from "./BoldCalendar";
-import {
-  Calendar as CalendarIcon,
-  Clock,
-  MapPin,
-  Building2,
-} from "lucide-react";
+import { parse } from "date-fns";
+import { Calendar as CalendarIcon } from "lucide-react";
 import { CustomInputField } from "../CustomForm";
+import { BookingFormValues } from "@/app/backend/validators/validators";
+import { useBookingPricing } from "@/hooks/useBookingPricing";
+import { useEvents } from "@/hooks/useEvents"; // 👈 Import this!
 
 interface Step1EventDetailsProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<BookingFormValues>;
   bookedDates: Date[];
   onDateSelect: (date: Date) => void;
 }
@@ -21,11 +20,23 @@ export function Step1EventDetails({
   bookedDates,
   onDateSelect,
 }: Step1EventDetailsProps) {
+  const eventType = form.watch("eventType") || "Wedding";
+
+  // 👇 Get the list of events for the dropdown
+  const { events, loading: eventsLoading, error: eventsError } = useEvents();
+
+  // 👇 Get pricing for the selected event
+  const {
+    eventPrice,
+    depositRate,
+    depositAmount,
+    isLoading: pricingLoading,
+  } = useBookingPricing(eventType);
+
   const selectedDate = form.watch("eventDate")
-    ? new Date(form.watch("eventDate"))
+    ? parse(form.watch("eventDate"), "yyyy-MM-dd", new Date())
     : null;
 
-  // Format date for display (DD/MM/YYYY)
   const formatDisplayDate = (date: Date | null) => {
     if (!date) return "";
     const day = String(date.getDate()).padStart(2, "0");
@@ -34,9 +45,50 @@ export function Step1EventDetails({
     return `${day}/${month}/${year}`;
   };
 
+  // Combined loading state
+  if (eventsLoading || pricingLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-heading font-bold">Event Details</h2>
+          <p className="text-muted-foreground text-sm">
+            Loading event types...
+          </p>
+        </div>
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="space-y-4">
+            <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+            <div className="h-32 bg-gray-200 rounded-3xl animate-pulse" />
+            <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+            <div className="grid grid-cols-2 gap-4">
+              <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+              <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+            </div>
+            <div className="h-12 bg-gray-200 rounded-xl animate-pulse" />
+          </div>
+          <div className="flex justify-center">
+            <div className="h-80 w-full bg-gray-200 rounded-xl animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (eventsError) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-heading font-bold">Event Details</h2>
+          <p className="text-red-500 text-sm">
+            Failed to load event types. Please refresh the page.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
-      {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-heading font-bold">Event Details</h2>
         <p className="text-muted-foreground text-sm">
@@ -47,7 +99,7 @@ export function Step1EventDetails({
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left Column - Form Fields */}
         <div className="space-y-4">
-          {/* Event Type */}
+          {/* Event Type - Dynamic from Database */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Event Type
@@ -56,16 +108,35 @@ export function Step1EventDetails({
               {...form.register("eventType")}
               className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
-              <option value="Wedding">Wedding</option>
-              <option value="Nightclub">Nightclub</option>
-              <option value="Corporate">Corporate Show</option>
-              <option value="Festival">Festival</option>
+              {events.map(
+                (
+                  option, // 👈 Use `events` here, not `event`
+                ) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label} — ₦{option.price.toLocaleString()}
+                  </option>
+                ),
+              )}
             </select>
-            {form.formState.errors.eventType && (
+            {form.formState.errors.eventType?.message && (
               <p className="text-red-500 text-xs mt-1">
-                {form.formState.errors.eventType.message}
+                {String(form.formState.errors.eventType.message)}
               </p>
             )}
+          </div>
+
+          {/* Price & Deposit Display */}
+          <div className="rounded-3xl border border-primary/10 bg-primary/5 p-4 mt-3">
+            <p className="text-sm text-muted-foreground">
+              Estimated booking quote
+            </p>
+            <p className="mt-2 text-3xl font-heading font-bold text-primary">
+              ₦{eventPrice.toLocaleString()}
+            </p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Secure your date with a {depositRate}% deposit of ₦
+              {depositAmount.toLocaleString()}.
+            </p>
           </div>
 
           <CustomInputField
@@ -82,11 +153,41 @@ export function Step1EventDetails({
               label="Country"
               placeholder="Nigeria"
             />
-            <CustomInputField
-              form={form}
+
+            <Controller
+              control={form.control}
               name="eventState"
-              label="State / Region"
-              placeholder="Lagos, Enugu, Abuja"
+              render={({ field, fieldState }) => (
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-1.5">
+                    State / Region
+                  </label>
+                  <input
+                    id={field.name}
+                    value={field.value || ""}
+                    onChange={(e) => field.onChange(e.target.value)}
+                    onBlur={(e) => {
+                      const val = (e.target as HTMLInputElement).value.trim();
+                      if (!val) {
+                        field.onBlur();
+                        return;
+                      }
+                      const lower = val.toLowerCase();
+                      if (!lower.includes("state")) {
+                        field.onChange(`${val} State`);
+                      }
+                      field.onBlur();
+                    }}
+                    placeholder="Lagos, Enugu, Abuja"
+                    className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-xs mt-1">
+                      {String(fieldState.error.message)}
+                    </p>
+                  )}
+                </div>
+              )}
             />
           </div>
 
@@ -98,7 +199,6 @@ export function Step1EventDetails({
             placeholder="19:30"
           />
 
-          {/* Display selected date */}
           {selectedDate && (
             <div className="flex items-center gap-3 p-3 rounded-xl bg-primary/5 border border-primary/10">
               <CalendarIcon className="h-5 w-5 text-primary" />

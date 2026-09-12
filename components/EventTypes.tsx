@@ -1,45 +1,83 @@
 "use client";
 
+import { useEvents } from "@/hooks/useEvents";
 import { motion } from "framer-motion";
+import Image from "next/image";
+import { EventCardsSkeleton } from "@/components/ui/ContentSkeleton";
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(price);
+};
 
 const EventTypes = () => {
-  const types = [
-    { label: "Wedding", icon: "💍" },
-    { label: "Nightclub", icon: "🎧" },
-    { label: "Corporate", icon: "🏢" },
-    { label: "Festival", icon: "🎪" },
-  ];
+  const { events, loading, error } = useEvents();
+
+  if (loading) {
+    return (
+      <section className="section-padding container-custom">
+        <div className="mb-8 text-center">
+          <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+            Experience
+          </p>
+          <h2 className="mt-3 text-3xl font-heading font-bold md:text-5xl">
+            Popular event experiences
+          </h2>
+        </div>
+        <EventCardsSkeleton count={4} />
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="section-padding container-custom">
+        <div className="rounded-2xl border border-destructive/20 bg-destructive/5 p-6 text-center text-destructive">
+          We couldn&apos;t load the latest event experiences right now.
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="section-padding container-custom">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        viewport={{ once: true }}
-        className="text-center max-w-2xl mx-auto mb-12"
-      >
-        <h2 className="heading-lg mb-4">Every Event, Elevated</h2>
-        <p className="text-muted-foreground">
-          From intimate gatherings to large-scale productions — we bring the
-          energy.
+      <div className="mb-8 text-center">
+        <p className="text-sm font-semibold uppercase tracking-[0.2em] text-primary">
+          Experience
         </p>
-      </motion.div>
+        <h2 className="mt-3 text-3xl font-heading font-bold md:text-5xl">
+          Popular event experiences
+        </h2>
+      </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {types.map((type, index) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 overflow-y-auto">
+        {events.map((type) => (
           <motion.div
-            key={type.label}
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: index * 0.1 }}
-            viewport={{ once: true }}
-            className="group relative overflow-hidden rounded-xl p-6 text-center bg-card border hover:shadow-lg transition-all cursor-pointer"
+            key={type._id}
+            className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm"
           >
-            <div className="text-4xl mb-3 group-hover:scale-110 transition-transform">
-              {type.icon}
+            <Image
+              src={type.src}
+              alt={type.label}
+              width={400}
+              height={300}
+              className="h-60 w-full object-cover"
+            />
+            <div className="space-y-3 p-4">
+              <div className="flex items-center justify-between gap-3">
+                <h3 className="text-xl font-semibold">{type.label}</h3>
+                <span className="text-sm font-semibold text-primary">
+                  {formatPrice(type.price)}
+                </span>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                {type.description}
+              </p>
             </div>
-            <p className="font-medium">{type.label}</p>
           </motion.div>
         ))}
       </div>

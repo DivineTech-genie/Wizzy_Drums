@@ -13,7 +13,7 @@ const Stats = () => {
 
   return (
     <section className="section-padding container-custom">
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <motion.div
             key={stat.label}
@@ -21,12 +21,12 @@ const Stats = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: index * 0.1 }}
             viewport={{ once: true }}
-            className="text-center"
+            className="rounded-[2rem] border border-border bg-background/80 p-8 text-center shadow-sm shadow-primary/5"
           >
-            <div className="inline-flex p-3 rounded-xl bg-primary/10 mb-4">
+            <div className="inline-flex h-14 w-14 items-center justify-center rounded-3xl bg-primary/10 mb-5">
               <stat.icon className="h-6 w-6 text-primary" />
             </div>
-            <p className="text-3xl md:text-4xl font-heading font-bold">
+            <p className="text-3xl md:text-4xl font-heading font-bold mb-2">
               {stat.value}
             </p>
             <p className="text-sm text-muted-foreground">{stat.label}</p>

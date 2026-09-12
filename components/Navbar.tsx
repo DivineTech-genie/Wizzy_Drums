@@ -3,12 +3,32 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Drum } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useSettings } from "@/hooks/admin/useSettings";
+
+const renderBrandName = (name: string) => {
+  const trimmedName = name?.trim() || "StageBook";
+  const spacedName = trimmedName.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+  const words = spacedName.split(/\s+/).filter(Boolean);
+  const primaryWord = words[0] ?? trimmedName;
+  const secondaryWords = words.length > 1 ? words.slice(1).join(" ") : "";
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span className="text-primary">{primaryWord}</span>
+      {secondaryWords && (
+        <span className="text-foreground"> {secondaryWords}</span>
+      )}
+      <Drum className="h-4 w-4 text-primary" />
+    </span>
+  );
+};
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { settings } = useSettings();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -41,7 +61,7 @@ const Navbar = () => {
           href="/"
           className="flex items-center gap-2 font-heading text-xl font-bold"
         >
-          <span className="text-primary">Stage</span>Book
+          <h1>{renderBrandName(settings.siteName)}</h1>
         </Link>
 
         {/* Desktop Nav */}

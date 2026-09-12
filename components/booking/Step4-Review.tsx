@@ -1,26 +1,28 @@
 "use client";
 
 import { UseFormReturn } from "react-hook-form";
-import {
-  Check,
-  Calendar,
-  MapPin,
-  User,
-  Mail,
-  Phone,
-  Plane,
-  Hotel,
-  Clock,
-} from "lucide-react";
+import { Check, Calendar, User, Plane } from "lucide-react";
+import { BookingFormValues } from "@/app/backend/validators/validators";
+import { useBookingPricing } from "@/hooks/useBookingPricing";
 
 interface Step4ReviewProps {
-  form: UseFormReturn<any>;
+  form: UseFormReturn<BookingFormValues>;
   onConfirm: () => void;
   isLoading: boolean;
 }
 
 export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
   const data = form.getValues();
+
+  // 🔥 Use the pricing hook
+  const {
+    eventPrice,
+    depositRate,
+    depositAmount,
+    flightDepositAmount,
+    totalDeposit,
+    isLoading: pricingLoading,
+  } = useBookingPricing(data.eventType, data.cannotAffordFlight);
 
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "Not set";
@@ -84,6 +86,21 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
     },
   ];
 
+  // Loading state
+  if (pricingLoading) {
+    return (
+      <div className="space-y-8">
+        <div className="text-center">
+          <h2 className="text-2xl font-heading font-bold">
+            Review Your Booking
+          </h2>
+          <p className="text-muted-foreground text-sm">Loading pricing...</p>
+        </div>
+        <div className="h-40 bg-gray-200 rounded-xl animate-pulse" />
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -91,6 +108,23 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
         <h2 className="text-2xl font-heading font-bold">Review Your Booking</h2>
         <p className="text-muted-foreground text-sm">
           Please verify all details before submitting
+        </p>
+      </div>
+
+      <div className="rounded-3xl border border-primary/10 bg-primary/5 p-5 text-center">
+        <p className="text-sm uppercase tracking-[0.18em] text-muted-foreground">
+          Estimated event quote
+        </p>
+        <p className="mt-2 text-3xl font-heading font-bold text-primary">
+          ₦{eventPrice.toLocaleString()}
+        </p>
+        <p className="text-sm text-muted-foreground mt-1">
+          Minimum deposit to secure your date: ₦{totalDeposit.toLocaleString()}{" "}
+          ({depositRate}%
+          {data.cannotAffordFlight
+            ? ` + ₦${flightDepositAmount.toLocaleString()} flight deposit`
+            : ""}
+          )
         </p>
       </div>
 

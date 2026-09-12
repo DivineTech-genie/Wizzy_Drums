@@ -8,11 +8,25 @@ export async function uploadFileToCloudinary(file: File): Promise<string> {
     body: formData,
   });
 
-  if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error || "Failed to upload file");
+  let payload: Record<string, unknown> = {};
+  try {
+    payload = (await response.json()) as Record<string, unknown>;
+  } catch {
+    payload = {};
   }
 
-  const data = await response.json();
-  return data.secure_url; // Cloudinary returns the URL
+  if (!response.ok) {
+    const errorMessage =
+      typeof payload.error === "string" ? payload.error : "Failed to upload file";
+    throw new Error(errorMessage);
+  }
+
+  const secureUrl =
+    typeof payload.secure_url === "string" ? payload.secure_url : "";
+
+  if (!secureUrl) {
+    throw new Error("Upload succeeded but no secure URL was returned.");
+  }
+
+  return secureUrl;
 }

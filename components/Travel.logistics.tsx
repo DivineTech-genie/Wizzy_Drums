@@ -1,32 +1,51 @@
 // components/booking/travel-logistics-section.tsx
 "use client";
 
-import { Field, FieldLabel, FieldError } from "@/components/ui/field";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { useEffect } from "react";
+import { Field, FieldLabel } from "@/components/ui/field";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Controller, UseFormReturn, useWatch } from "react-hook-form";
+import { BookingFormValues } from "@/app/backend/validators/validators";
+import { cn } from "@/lib/utils";
+import { isEasternNigeriaState } from "@/lib/eastern-states";
 
-export function TravelLogisticsForm({ form }: { form: UseFormReturn<any> }) {
+export function TravelLogisticsForm({
+  form,
+}: {
+  form: UseFormReturn<BookingFormValues>;
+}) {
   const stateValue =
     useWatch({ control: form.control, name: "eventState" }) || "";
   const providesFlight = useWatch({
     control: form.control,
     name: "providesFlight",
   });
+  const cannotAffordFlight = useWatch({
+    control: form.control,
+    name: "cannotAffordFlight",
+  });
   const requiresAccommodation = useWatch({
     control: form.control,
     name: "requiresAccommodation",
   });
 
+  const isLocal = isEasternNigeriaState(stateValue);
+
+  useEffect(() => {
+    if (stateValue.trim() && isLocal) {
+      form.setValue("providesFlight", false, { shouldValidate: true });
+      form.setValue("cannotAffordFlight", false, { shouldValidate: true });
+    }
+  }, [form, isLocal, stateValue]);
+
   if (!stateValue.trim()) return null;
-  const isLocal = stateValue.trim().toLowerCase() === "enugu";
 
   return (
     <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 space-y-4 text-slate-900">
       {isLocal ? (
         <div className="space-y-1">
           <p className="text-xs font-bold text-emerald-600">
-            📍 Local Event (Enugu State)
+            📍 Local Event {`in (${stateValue})`}
           </p>
           <p className="text-xs text-slate-600">
             Host must arrange local secure ground transportation.
@@ -35,69 +54,84 @@ export function TravelLogisticsForm({ form }: { form: UseFormReturn<any> }) {
       ) : (
         <div className="space-y-4">
           <div className="bg-amber-50 text-amber-900 p-3 rounded text-xs border border-amber-200">
-            ⚠️ Out-of-state booking requires flight travel routing.
+            ⚠️ Any booking outside the east come with a two-way flight for one
+            and accommodation.
           </div>
 
-          {/* Flight Provisions (Controlled Radio Group) */}
-          <Controller
-            control={form.control}
-            name="providesFlight"
-            render={({ field, fieldState: { error } }) => (
-              <Field data-invalid={!!error} className="space-y-2">
-                <FieldLabel className="text-xs font-bold uppercase text-slate-500">
-                  Flight Arrangement
-                </FieldLabel>
-
-                <RadioGroup
-                  onValueChange={(val) => {
-                    field.onChange(val);
-                    // 👇 Update the booleans based on selection
-                    form.setValue("providesFlight", val === "provide");
-                    form.setValue("cannotAffordFlight", val === "charge");
-                    console.log(val);
+          <Field className="space-y-3">
+            <FieldLabel className="text-xs font-bold uppercase text-slate-500">
+              Flight Arrangement
+            </FieldLabel>
+            <div className="grid gap-3">
+              <label
+                htmlFor="provide-flights"
+                className={cn(
+                  "flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition-all",
+                  providesFlight
+                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-primary/50 hover:bg-primary/5",
+                )}
+              >
+                <Checkbox
+                  id="provide-flights"
+                  checked={!!providesFlight}
+                  onCheckedChange={(checked) => {
+                    const selected = Boolean(checked);
+                    form.setValue("providesFlight", selected);
+                    if (selected) {
+                      form.setValue("cannotAffordFlight", false);
+                    }
                   }}
-                  value={field.value}
-                  className="flex gap-4"
-                >
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="provide" id="r1" />
-                    <label
-                      htmlFor="r1"
-                      className="text-sm cursor-pointer font-medium text-slate-700"
-                    >
-                      I will buy flights
-                    </label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <RadioGroupItem value="charge" id="r2" />
-                    <label
-                      htmlFor="r2"
-                      className="text-sm cursor-pointer font-medium text-slate-700"
-                    >
-                      Charge flights to quote
-                    </label>
-                  </div>
-                </RadioGroup>
+                />
+                <div>
+                  <p className="font-medium">I will buy flights</p>
+                  <p className="text-xs text-muted-foreground">
+                    Upload flight ticket once purchased.
+                  </p>
+                </div>
+              </label>
 
-                {error && <FieldError>{error.message}</FieldError>}
-              </Field>
-            )}
-          />
+              <label
+                htmlFor="charge-flights"
+                className={cn(
+                  "flex cursor-pointer items-center gap-3 rounded-2xl border p-4 transition-all",
+                  cannotAffordFlight
+                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                    : "border-slate-200 bg-white text-slate-700 hover:border-primary/50 hover:bg-primary/5",
+                )}
+              >
+                <Checkbox
+                  id="charge-flights"
+                  checked={!!cannotAffordFlight}
+                  onCheckedChange={(checked) => {
+                    const selected = Boolean(checked);
+                    form.setValue("cannotAffordFlight", selected);
+                    if (selected) {
+                      form.setValue("providesFlight", false);
+                    }
+                  }}
+                />
+                <div>
+                  <p className="font-medium">Charge flights to quote</p>
+                  <p className="text-xs text-muted-foreground">
+                    We’ll add the flight cost to your deposit and quote.
+                  </p>
+                </div>
+              </label>
+            </div>
+          </Field>
 
           {/* Accommodation Toggle (Controlled Checkbox) */}
           <Controller
             control={form.control}
             name="requiresAccommodation"
-            render={({ field, fieldState: { error } }) => (
+            render={({ field }) => (
               <Field className="flex items-center space-x-3 pt-2 border-t border-slate-200">
                 <Checkbox
                   id="accommodation"
                   checked={field.value}
-                  onClick={(e) => {
+                  onClick={() => {
                     field.onChange(!field.value);
-                    console.log(
-                      `Accommodation checkbox clicked: ${!field.value}`,
-                    );
                   }}
                   onCheckedChange={field.onChange}
                 />

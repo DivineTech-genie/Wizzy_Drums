@@ -38,14 +38,14 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center max-w-2xl mx-auto mb-16"
         >
-          <h2 className="heading-lg mb-4">How It Works</h2>
+          <h2 className="heading-lg mb-4">How it works</h2>
           <p className="text-muted-foreground">
-            Three simple steps to book world-class entertainment for your event.
+            One smooth process from inquiry to performance — designed for busy
+            event teams.
           </p>
         </motion.div>
 
         <div className="grid md:grid-cols-3 gap-8 relative">
-          {/* Connector Line */}
           <div className="hidden md:block absolute top-1/3 left-1/4 right-1/4 h-0.5 bg-primary/20 -translate-y-1/2" />
 
           {steps.map((step, index) => (
@@ -57,15 +57,15 @@ const HowItWorks = () => {
               viewport={{ once: true }}
               className="relative"
             >
-              <Card className="h-full text-center p-6 hover:shadow-lg transition-shadow">
-                <CardContent className="p-0 pt-6">
-                  <div className="inline-flex p-4 rounded-2xl bg-primary/10 mb-4">
-                    <step.icon className="h-8 w-8 text-primary" />
+              <Card className="h-full rounded-[2rem] border border-border bg-background shadow-sm transition-shadow hover:shadow-lg">
+                <CardContent className="p-6 pt-8 text-center">
+                  <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 mb-5 mx-auto">
+                    <step.icon className="h-7 w-7 text-primary" />
                   </div>
                   <h3 className="font-heading text-xl font-semibold mb-2">
                     {step.title}
                   </h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-7">
                     {step.description}
                   </p>
                 </CardContent>
@@ -81,12 +81,12 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Button size="lg" className="gap-2">
-            <Link href="/book">
+          <Link href="/book" className="inline-flex">
+            <Button size="lg" className="gap-2 shadow-lg shadow-primary/10">
               Start Your Booking
               <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+            </Button>
+          </Link>
         </motion.div>
       </div>
     </section>
