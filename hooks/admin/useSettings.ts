@@ -1,4 +1,3 @@
-// app/admin/settings/hooks/useSettings.ts
 "use client";
 
 import {

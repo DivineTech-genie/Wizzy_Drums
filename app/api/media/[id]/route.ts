@@ -3,14 +3,15 @@ import { connectDB } from "@/app/backend/config/db";
 import Media from "@/app/backend/models/media.model";
 import { verifyAuth } from "@/lib/auth";
 
-// GET single item (optional)
+// GET single item
 export async function GET(
   req: NextRequest,
-  { params }: { params: { id: string } },
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
-    const media = await Media.findById(params.id);
+    const { id } = await params;
+    const media = await Media.findById(id);
 
     if (!media) {
       return NextResponse.json({ error: "Media not found" }, { status: 404 });

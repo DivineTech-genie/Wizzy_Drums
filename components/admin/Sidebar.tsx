@@ -98,11 +98,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
 
         {/* Navigation */}
         <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
-          <TooltipProvider delayDuration={0}>
+          <TooltipProvider>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
               return (
-                <Tooltip key={item.href} disableHoverableContent>
+                <Tooltip key={item.href}>
                   <TooltipTrigger>
                     <Link
                       href={item.href}

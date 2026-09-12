@@ -1,4 +1,3 @@
-// app/gallery/CategoryFilter.tsx
 "use client";
 
 interface CategoryFilterProps {

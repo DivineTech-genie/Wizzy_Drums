@@ -2,6 +2,17 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
+import { IBooking } from "@/app/backend/models/booking.model";
+
+export type Booking = Omit<
+  IBooking,
+  "_id" | "eventDate" | "createdAt" | "updatedAt"
+> & {
+  _id: string;
+  eventDate: string;
+  createdAt: string;
+  updatedAt: string;
+};
 
 interface UseBookingsParams {
   search?: string;
@@ -10,7 +21,7 @@ interface UseBookingsParams {
 }
 
 export function useBookings(params: UseBookingsParams = {}) {
-  const [bookings, setBookings] = useState([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();

@@ -1,4 +1,3 @@
-// app/gallery/components/GalleryItem.tsx
 "use client";
 
 import { motion } from "framer-motion";

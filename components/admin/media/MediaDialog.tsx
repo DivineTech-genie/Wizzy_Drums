@@ -117,8 +117,8 @@ export function MediaDialog({
               <Label>Type</Label>
               <Select
                 value={watchType}
-                onValueChange={(val: "image" | "video") =>
-                  setValue("type", val)
+                onValueChange={(val) =>
+                  setValue("type", (val ?? "image") as "image" | "video")
                 }
               >
                 <SelectTrigger>

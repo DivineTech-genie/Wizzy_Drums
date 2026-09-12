@@ -7,7 +7,7 @@ import { EventsHeader } from "./EventsHeader";
 import { EventsSearch } from "./EventsSearch";
 import { EventsTable } from "./EventsTable";
 import { EventDialog } from "./EventDialog";
-import { useEvents } from "@/hooks/admin/useEvents";
+import { useEvents } from "@/hooks/admin/useAdminEvents";
 import { eventSchema, EventFormData, EventType } from "@/app/backend/validators/events";
 
 export default function EventsPage() {

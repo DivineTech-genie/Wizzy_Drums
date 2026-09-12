@@ -7,7 +7,8 @@ import { Calendar as CalendarIcon } from "lucide-react";
 import { CustomInputField } from "../CustomForm";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { useBookingPricing } from "@/hooks/useBookingPricing";
-import { useEvents } from "@/hooks/useEvents"; // 👈 Import this!
+import { useEvents } from "@/hooks/useEvents";
+
 
 interface Step1EventDetailsProps {
   form: UseFormReturn<BookingFormValues>;
@@ -22,10 +23,8 @@ export function Step1EventDetails({
 }: Step1EventDetailsProps) {
   const eventType = form.watch("eventType") || "Wedding";
 
-  // 👇 Get the list of events for the dropdown
   const { events, loading: eventsLoading, error: eventsError } = useEvents();
 
-  // 👇 Get pricing for the selected event
   const {
     eventPrice,
     depositRate,
@@ -108,15 +107,11 @@ export function Step1EventDetails({
               {...form.register("eventType")}
               className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
             >
-              {events.map(
-                (
-                  option, // 👈 Use `events` here, not `event`
-                ) => (
-                  <option key={option.value} value={option.value}>
-                    {option.label} — ₦{option.price.toLocaleString()}
-                  </option>
-                ),
-              )}
+              {events.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label} — ₦{option.price.toLocaleString()}
+                </option>
+              ))}
             </select>
             {form.formState.errors.eventType?.message && (
               <p className="text-red-500 text-xs mt-1">

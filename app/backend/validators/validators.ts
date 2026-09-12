@@ -1,4 +1,3 @@
-// app/backend/validators/validators.ts
 import { z } from "zod";
 import { isEasternNigeriaState } from "../../../lib/eastern-states";
 
@@ -25,8 +24,8 @@ export const CreateBookingSchema = z
     cannotAffordFlight: z.boolean().default(false),
     requiresAccommodation: z.boolean().default(false),
     depositConfirmed: z.boolean().default(false),
-    flightTicketUrl: z.string().url().optional().nullable(),
-    hotelTicketUrl: z.string().url().optional().nullable(),
+    flightTicketUrl: z.string().url().nullable(),
+    hotelTicketUrl: z.string().url().nullable(),
   })
   .superRefine((data, ctx) => {
     const eventCountry = data.eventCountry.trim().toLowerCase();
@@ -76,9 +75,9 @@ export const CreateBookingSchema = z
 // end of CreateBookingSchema.superRefine
 
 export const BookingFormSchema = CreateBookingSchema.extend({
-  specialRequests: z.string().optional(),
+  specialRequests: z.string().default(""),
   termsAccepted: z.boolean().default(false),
-  depositReceiptUrl: z.string().url().optional().nullable(),
+  depositReceiptUrl: z.string().url().nullable(),
 }).superRefine((data, ctx) => {
   if (data.depositConfirmed && !data.depositReceiptUrl?.trim()) {
     ctx.addIssue({

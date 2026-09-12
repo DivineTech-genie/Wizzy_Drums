@@ -1,21 +1,25 @@
 // app/gallery/components/CategoryFilter.tsx
 "use client";
 
-import { categories } from "@/lib/gallery-data";
+import { categories as defaultCategories } from "@/lib/gallery-data";
 import { cn } from "@/lib/utils";
 
 interface CategoryFilterProps {
+  categories?: { id: string; label: string }[];
   activeCategory: string;
   onCategoryChange: (category: string) => void;
 }
 
 export function CategoryFilter({
+  categories,
   activeCategory,
   onCategoryChange,
 }: CategoryFilterProps) {
+  const filterOptions = categories ?? defaultCategories;
+
   return (
     <div className="flex flex-wrap gap-2 justify-center">
-      {categories.map((category) => (
+      {filterOptions.map((category) => (
         <button
           key={category.id}
           onClick={() => onCategoryChange(category.id)}
