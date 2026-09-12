@@ -9,13 +9,11 @@ import { useMedia } from "@/hooks/useMedia";
 import { IMedia } from "@/app/backend/models/media.model";
 
 export function GalleryGrid() {
-  const { media, isLoading, error, getMediaByCategory, getCategories } =
-    useMedia();
+  const { isLoading, error, getMediaByCategory, getCategories } = useMedia();
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedItem, setSelectedItem] = useState<IMedia | null>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
 
-  // Get categories from the database
   const categories = useMemo(() => {
     const cats = getCategories();
     return [
@@ -38,7 +36,6 @@ export function GalleryGrid() {
     setSelectedItem(null);
   };
 
-  // All items for lightbox navigation (filtered by category)
   const allItems = filteredItems;
 
   if (isLoading) {
@@ -84,7 +81,7 @@ export function GalleryGrid() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 gap-6 auto-rows-fr">
           {filteredItems.map((item) => (
             <GalleryItem
-              key={item._id}
+              key={String(item._id)}
               item={item}
               onClick={() => handleItemClick(item)}
               className={item.type === "video" ? "md:col-span-1" : ""}
@@ -100,7 +97,9 @@ export function GalleryGrid() {
       </div>
 
       <GalleryLightbox
-        key={selectedItem?._id ?? "gallery-lightbox-closed"}
+        key={
+          selectedItem ? String(selectedItem._id) : "gallery-lightbox-closed"
+        }
         open={lightboxOpen}
         onClose={handleLightboxClose}
         items={allItems}

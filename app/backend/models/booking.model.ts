@@ -18,7 +18,9 @@ export interface IBooking extends Document {
   flightTicketUrl?: string | null;
   hotelTicketUrl?: string | null;
   depositReceiptUrl?: string | null;
-  // logisticsVerified: boolean;
+  logisticsVerified: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const bookingSchema = new Schema<IBooking>(
@@ -55,7 +57,6 @@ const bookingSchema = new Schema<IBooking>(
   },
 );
 
-// Conditional validation: require one flight-related flag when eventState is outside eastern region
 bookingSchema.pre("validate", function () {
   const doc = this as IBooking;
   const isEastern = isEasternNigeriaState(doc.eventState || "");

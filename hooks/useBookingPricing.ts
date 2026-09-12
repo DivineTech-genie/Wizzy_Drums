@@ -1,4 +1,3 @@
-// hooks/useBookingPricing.ts
 import { useMemo } from "react";
 import { useEvents } from "./useEvents";
 import { isEasternNigeriaState } from "@/lib/eastern-states";
@@ -14,7 +13,7 @@ interface BookingPricingResult {
   selectedEvent: any;
   isLoading: boolean;
   error: any;
-  isEastern: boolean; // 👈 NEW: Expose this
+  isEastern: boolean;
   getEventPrice: (eventType: string) => number;
   getDepositRate: (eventType: string) => number;
   getDepositAmount: (eventType: string) => number;
@@ -28,9 +27,9 @@ interface BookingPricingResult {
 export function useBookingPricing(
   eventType: string = "Wedding",
   cannotAffordFlight: boolean = false,
-  eventState: string = "", // 👈 NEW: Pass the state
+  eventState: string = "",
 ): BookingPricingResult {
-  const { events, isLoading, error } = useEvents();
+  const { events, loading, error } = useEvents();
 
   const selectedEvent = useMemo(() => {
     return events.find((ev) => ev.value === eventType);
@@ -65,7 +64,6 @@ export function useBookingPricing(
     const deposit = getDepositAmount(type);
     const isEasternState = isEasternNigeriaState(state);
 
-    
     const shouldAddFlightDeposit = !isEasternState && includeFlightDeposit;
 
     return shouldAddFlightDeposit ? deposit + FLIGHT_DEPOSIT_AMOUNT : deposit;
@@ -93,9 +91,9 @@ export function useBookingPricing(
     flightDepositAmount,
     totalDeposit,
     selectedEvent,
-    isLoading,
+    isLoading: loading,
     error,
-    isEastern, // 👈 Expose this
+    isEastern,
     getEventPrice,
     getDepositRate,
     getDepositAmount,

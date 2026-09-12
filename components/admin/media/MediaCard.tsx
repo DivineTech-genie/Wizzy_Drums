@@ -67,8 +67,8 @@ export function MediaCard({
                 <Image
                   src={item.src}
                   alt={item.title}
-                  width={item.width || 1200}
-                  height={item.height || 800}
+                  width={item.width}
+                  height={item.height}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -133,7 +133,7 @@ export function MediaCard({
                   variant="ghost"
                   size="icon"
                   className="h-6 w-6"
-                  onClick={() => onToggleHero(item._id, item.isHero)}
+                  onClick={() => onToggleHero(item._id, item.isHero ?? false)}
                 >
                   {item.isHero ? (
                     <Star className="h-3 w-3 fill-amber-500 text-amber-500" />

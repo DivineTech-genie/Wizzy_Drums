@@ -4,8 +4,8 @@ import { z } from "zod";
 export const siteSettingsSchema = z.object({
   // Site info
   siteName: z.string().min(1, "Site name is required"),
-  tagline: z.string().optional().default(""),
-  logoUrl: z.string().optional().default(""),
+  tagline: z.string().default(""),
+  logoUrl: z.string().default(""),
 
   // Bank details
   bankDetails: z.object({
@@ -14,7 +14,7 @@ export const siteSettingsSchema = z.object({
     accountNumber: z
       .string()
       .min(10, "Account number must be at least 10 digits"),
-    sortCode: z.string().optional().default(""),
+    sortCode: z.string().default(""),
   }),
 
   // Contact details
@@ -22,15 +22,15 @@ export const siteSettingsSchema = z.object({
     email: z.string().email("Invalid email"),
     phone: z.string().min(5, "Phone is required"),
     location: z.string().min(2, "Location is required"),
-    address: z.string().optional().default(""),
+    address: z.string().default(""),
   }),
 
   // Social links
   socials: z.object({
-    instagram: z.string().optional().default(""),
-    twitter: z.string().optional().default(""),
-    youtube: z.string().optional().default(""),
-    facebook: z.string().optional().default(""),
+    instagram: z.string().default(""),
+    twitter: z.string().default(""),
+    youtube: z.string().default(""),
+    facebook: z.string().default(""),
   }),
 
   // Preferences
@@ -40,10 +40,10 @@ export const siteSettingsSchema = z.object({
   twoFactorEnabled: z.boolean().default(false),
 });
 
-export type SiteSettings = z.infer<typeof siteSettingsSchema>;
+export type SiteSettings = z.input<typeof siteSettingsSchema>;
 
 export const DEFAULT_SETTINGS: SiteSettings = {
-  siteName: "StageBook",
+  siteName: "Wizzy Drums",
   tagline: "Professional Event Entertainment",
   logoUrl: "",
   bankDetails: {

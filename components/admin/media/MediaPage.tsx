@@ -9,7 +9,7 @@ import { MediaSearch } from "./MediaSearch";
 import { MediaTabs } from "./MediaTabs";
 import { MediaGrid } from "./MediaGrid";
 import { MediaDialog } from "./MediaDialog";
-import { useMedia } from "@/hooks/admin/useMedia";
+import { useMedia } from "@/hooks/admin/useAdminMedia";
 import {
   mediaSchema,
   MediaFormData,

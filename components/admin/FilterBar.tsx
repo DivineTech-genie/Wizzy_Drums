@@ -82,7 +82,10 @@ export function FilterBar({
 
         <div className="flex gap-2">
           {/* Status Filter */}
-          <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <Select
+            value={statusFilter}
+            onValueChange={(value) => setStatusFilter(value ?? "all")}
+          >
             <SelectTrigger className="w-35">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
@@ -96,7 +99,10 @@ export function FilterBar({
           </Select>
 
           {/* Event Type Filter */}
-          <Select value={typeFilter} onValueChange={setTypeFilter}>
+          <Select
+            value={typeFilter}
+            onValueChange={(value) => setTypeFilter(value ?? "all")}
+          >
             <SelectTrigger className="w-35">
               <SelectValue placeholder="Event Type" />
             </SelectTrigger>
