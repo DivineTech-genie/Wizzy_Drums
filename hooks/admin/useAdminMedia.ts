@@ -5,6 +5,7 @@ import { MediaItem } from "@/app/backend/validators/media";
 import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 
+/** Loads media for a category and exposes administrative mutation helpers. */
 export function useMedia(category: string = "photos") {
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -36,16 +37,21 @@ export function useMedia(category: string = "photos") {
       });
 
       if (res.ok) {
-        toast.success("Media added");
+        const payload = await res.json();
+        toast.success(payload.message || "Media added");
         await fetchMedia();
         return { success: true };
       } else {
         const error = await res.json();
-        toast.error(error.error || "Failed to create");
+        const message =
+          error.message || error.error || "Failed to create media";
+        toast.error(message);
         return { success: false, error };
       }
-    } catch {
-      toast.error("Error creating media");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Error creating media";
+      toast.error(message);
       return { success: false };
     }
   };
@@ -59,37 +65,50 @@ export function useMedia(category: string = "photos") {
       });
 
       if (res.ok) {
-        toast.success("Media updated");
+        const payload = await res.json();
+        toast.success(payload.message || "Media updated");
         await fetchMedia();
         return { success: true };
       } else {
         const error = await res.json();
-        toast.error(error.message || "Failed to update");
+        const message =
+          error.message || error.error || "Failed to update media";
+        toast.error(message);
         return { success: false, error };
       }
-    } catch {
-      toast.error("Error updating media");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Error updating media";
+      toast.error(message);
       return { success: false };
     }
   };
 
   const deleteMedia = async (id: string) => {
-    if (!confirm("Delete this media item?")) return { success: false };
+    if (!confirm("Delete this media item?")) {
+      toast.info("Media deletion cancelled");
+      return { success: false };
+    }
 
     try {
       const res = await fetch(`/api/media/${id}`, { method: "DELETE" });
 
       if (res.ok) {
-        toast.success("Media deleted");
+        const payload = await res.json();
+        toast.success(payload.message || "Media deleted");
         await fetchMedia();
         return { success: true };
       } else {
         const error = await res.json();
-        toast.error(error.message || "Failed to delete");
+        const message =
+          error.message || error.error || "Failed to delete media";
+        toast.error(message);
         return { success: false };
       }
-    } catch {
-      toast.error("Failed to delete");
+    } catch (error) {
+      const message =
+        error instanceof Error ? error.message : "Failed to delete media";
+      toast.error(message);
       return { success: false };
     }
   };

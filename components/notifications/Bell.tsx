@@ -7,6 +7,7 @@ import { Popover, PopoverContent } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatDistanceToNow } from "date-fns";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface Notification {
@@ -19,6 +20,7 @@ interface Notification {
   createdAt: string;
 }
 
+/** Displays administrative notifications and manages their read state. */
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -31,9 +33,12 @@ export function NotificationBell() {
       if (data.status === "success") {
         setNotifications(data.data);
         setUnreadCount(data.unreadCount);
+      } else {
+        toast.error(data.message || "Failed to load notifications");
       }
     } catch (error) {
       console.error("Failed to fetch notifications:", error);
+      toast.error("Failed to load notifications");
     }
   };
 
@@ -46,13 +51,23 @@ export function NotificationBell() {
 
   const markAsRead = async (id: string) => {
     try {
-      await fetch(`/api/admin/notifications/${id}`, { method: "PATCH" });
+      const response = await fetch(`/api/admin/notifications/${id}`, {
+        method: "PATCH",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || "Failed to mark notification as read");
+        return;
+      }
+
       setNotifications(
         notifications.map((n) => (n._id === id ? { ...n, read: true } : n)),
       );
       setUnreadCount(Math.max(0, unreadCount - 1));
     } catch (error) {
       console.error("Failed to mark as read:", error);
+      toast.error("Failed to mark notification as read");
     }
   };
 
@@ -63,13 +78,24 @@ export function NotificationBell() {
 
   const deleteNotification = async (id: string) => {
     try {
-      await fetch(`/api/admin/notifications/${id}`, { method: "DELETE" });
+      const response = await fetch(`/api/admin/notifications/${id}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || "Failed to delete notification");
+        return;
+      }
+
       setNotifications(notifications.filter((n) => n._id !== id));
       if (!notifications.find((n) => n._id === id)?.read) {
         setUnreadCount(Math.max(0, unreadCount - 1));
       }
+      toast.success("Notification deleted");
     } catch (error) {
       console.error("Failed to delete notification:", error);
+      toast.error("Failed to delete notification");
     }
   };
 

@@ -20,4 +20,39 @@ cloudinary.config({
   secure: true,
 });
 
+/** Extracts a Cloudinary public ID from a delivery URL when possible. */
+export const getCloudinaryPublicId = (url?: string | null): string | null => {
+  if (!url) return null;
+
+  try {
+    const parsed = new URL(url);
+    const pathname = decodeURIComponent(parsed.pathname);
+    const match = pathname.match(
+      /\/upload\/(?:v\d+\/)?(.+?)(?:\.[A-Za-z0-9]+)?$/,
+    );
+    return match?.[1] ?? null;
+  } catch {
+    return null;
+  }
+};
+
+/** Deletes a Cloudinary asset identified by its delivery URL. */
+export const deleteCloudinaryFile = async (
+  url?: string | null,
+): Promise<boolean> => {
+  if (!url) return true;
+
+  const publicId = getCloudinaryPublicId(url);
+  if (!publicId) return false;
+
+  try {
+    const result = await cloudinary.uploader.destroy(publicId, {
+      invalidate: true,
+    });
+    return result?.result === "ok" || result?.result === "not found";
+  } catch {
+    return false;
+  }
+};
+
 export { cloudinary };

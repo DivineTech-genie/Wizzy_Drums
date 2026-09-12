@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { toast } from "sonner";
 import { EventFormData, EventType } from "@/app/backend/validators/events";
 
+/** Loads event types and exposes administrative mutation helpers. */
 export function useEvents() {
   const [events, setEvents] = useState<EventType[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,7 +74,10 @@ export function useEvents() {
   };
 
   const deleteEvent = async (id: string) => {
-    if (!confirm("Delete this event type?")) return { success: false };
+    if (!confirm("Delete this event type?")) {
+      toast.info("Event deletion cancelled");
+      return { success: false };
+    }
 
     try {
       const res = await fetch(`/api/admin/events/${id}`, {

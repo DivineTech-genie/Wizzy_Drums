@@ -46,6 +46,7 @@ const bookingSchema = new Schema<IBooking>(
     providesFlight: { type: Boolean, default: false },
     cannotAffordFlight: { type: Boolean, default: false }, // If they check "can't afford/provide flight"
     requiresAccommodation: { type: Boolean, default: false },
+    logisticsVerified: { type: Boolean, default: false },
 
     // Secure Document Upload URLs
     flightTicketUrl: { type: String, default: null },

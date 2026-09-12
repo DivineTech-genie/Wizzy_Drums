@@ -24,8 +24,10 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { format } from "date-fns";
+import { toast } from "sonner";
 import { useBookings } from "@/hooks/admin/useBooking";
 
+/** Displays booking logistics and allows administrators to verify them. */
 export default function LogisticsPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");
@@ -63,12 +65,23 @@ export default function LogisticsPage() {
         body: JSON.stringify({ logisticsVerified: verified }),
       });
 
-      if (response.ok) {
-        // Refresh bookings
-        window.location.reload();
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(
+          errorData.message || "Failed to update logistics verification",
+        );
+        return;
       }
+
+      toast.success(
+        verified
+          ? "Logistics verified successfully"
+          : "Logistics verification removed",
+      );
+      window.location.reload();
     } catch (error) {
       console.error("Failed to verify logistics:", error);
+      toast.error("An error occurred while updating logistics verification");
     }
   };
 

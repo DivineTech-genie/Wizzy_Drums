@@ -23,6 +23,7 @@ interface EventDialogProps {
   isSubmitting: boolean;
 }
 
+/** Provides the event create/edit form with image upload handling. */
 export function EventDialog({
   open,
   onOpenChange,
@@ -69,7 +70,9 @@ export function EventDialog({
       setPreviewUrl(url);
       toast.success("Image uploaded successfully");
     } catch (error) {
-      toast.error("Failed to upload image");
+      const message =
+        error instanceof Error ? error.message : "Failed to upload image";
+      toast.error(message);
       setPreviewUrl(null);
       setValue("src", "");
     } finally {

@@ -13,6 +13,7 @@ import { useBookings } from "@/hooks/admin/useBooking";
 import { useStats } from "@/hooks/admin/useState";
 import { toast } from "sonner";
 
+/** Renders the administrative booking dashboard and status actions. */
 export default function AdminDashboard() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
@@ -49,27 +50,47 @@ export default function AdminDashboard() {
         body: JSON.stringify({ status }),
       });
 
-      if ((response.ok && status === "confirmed") || "cancelled") {
-        const booking = await response.json();
-
-        // 👇 Send email with the admin note
-        await fetch("/api/send-email", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            clientEmail: booking.data.clientEmail,
-            clientName: booking.data.clientName,
-            eventType: booking.data.eventType,
-            eventDate: booking.data.eventDate,
-            eventLocation: booking.data.eventLocation,
-            status: booking.data.status,
-            eventTime: booking.data.eventTime,
-            adminNote: adminNote || "",
-          }),
-        });
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        toast.error(errorData.message || "Failed to update booking status");
+        return;
       }
+
+      const booking = await response.json().catch(() => null);
+
+      if (status === "confirmed" || status === "cancelled") {
+        try {
+          await fetch("/api/send-email", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              clientEmail: booking?.data?.clientEmail,
+              clientName: booking?.data?.clientName,
+              eventType: booking?.data?.eventType,
+              eventDate: booking?.data?.eventDate,
+              eventLocation: booking?.data?.eventLocation,
+              status: booking?.data?.status,
+              eventTime: booking?.data?.eventTime,
+              adminNote: adminNote || "",
+            }),
+          });
+          toast.success(
+            status === "confirmed"
+              ? "Booking confirmed and email sent"
+              : "Booking cancelled",
+          );
+        } catch (emailError) {
+          console.error("Failed to send status email:", emailError);
+          toast.error("Booking updated, but the email notification failed");
+        }
+      } else {
+        toast.success("Booking status updated");
+      }
+
+      refetch();
     } catch (error) {
       console.error("Failed to update status:", error);
+      toast.error("An error occurred while updating the booking status");
     }
   };
 

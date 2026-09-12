@@ -33,6 +33,7 @@ const getTypeColor = (type: string) => {
     : "bg-purple-500/10 text-purple-500";
 };
 
+/** Displays a media item with view, edit, hero, and delete actions. */
 export function MediaCard({
   item,
   isFirst,
@@ -96,7 +97,7 @@ export function MediaCard({
           </div>
 
           {/* Actions Overlay */}
-          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+          <div className="absolute inset-0 bg-black/60 transition-opacity flex items-center justify-center gap-2">
             <Button size="sm" variant="secondary" className="h-8 gap-1">
               <a href={item.src} target="_blank" rel="noopener noreferrer">
                 <ExternalLink className="h-3 w-3" />

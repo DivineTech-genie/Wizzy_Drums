@@ -24,6 +24,7 @@ const mergeSettings = (value: Partial<SiteSettings> = {}): SiteSettings => ({
   },
 });
 
+/** Loads site settings and exposes a helper for saving updates. */
 export function useSettings() {
   const [settings, setSettings] = useState<SiteSettings>(DEFAULT_SETTINGS);
   const [loading, setLoading] = useState(true);
@@ -45,7 +46,6 @@ export function useSettings() {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchSettings();
   }, [fetchSettings]);
 

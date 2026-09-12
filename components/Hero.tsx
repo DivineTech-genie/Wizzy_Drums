@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Star,
@@ -15,13 +15,39 @@ import { Button } from "@/components/ui/button";
 import { useMedia } from "@/hooks/useMedia";
 import { HeroVideoSkeleton } from "@/components/ui/ContentSkeleton";
 
+/** Renders the landing-page hero and controls video playback and audio. */
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 120]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const [isMuted, setIsMuted] = useState(true);
+  const [isInView, setIsInView] = useState(false);
   const { getHeroVideo, isLoading } = useMedia();
   const heroVideo = getHeroVideo();
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    if (isInView) {
+      void video.play().catch(() => undefined);
+    } else {
+      video.pause();
+    }
+  }, [isInView, heroVideo?.src]);
+
+  useEffect(() => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => setIsInView(entry.isIntersecting),
+      { threshold: 0.5 },
+    );
+
+    observer.observe(video);
+    return () => observer.disconnect();
+  }, [heroVideo?.src]);
 
   const toggleMute = () => {
     const video = videoRef.current;

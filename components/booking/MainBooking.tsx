@@ -15,6 +15,7 @@ import { Step3ClientInfo } from "./Step3-ClientInfo";
 import { Step4Deposit } from "./Step4Deposit";
 import { Step4Review } from "./Step4-Review";
 import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
 // Extend the schema to include specialRequests and termsAccepted
@@ -27,6 +28,7 @@ const mockBookedDates = [
   new Date(2026, 7, 1),
 ];
 
+/** Coordinates the multi-step booking form and submits completed bookings. */
 export function MainBooking() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
@@ -159,20 +161,29 @@ export function MainBooking() {
 
       if (!response.ok) {
         console.error("Booking API error response:", result);
-        // Prefer the detailed `error` field returned by the API when present
-        throw new Error((result as any).error || result.message || "Booking failed");
+        const message =
+          (result as any)?.error ||
+          (result as any)?.message ||
+          "Booking failed";
+        toast.error(message);
+        throw new Error(message);
       }
 
+      toast.success("Booking submitted successfully! 🎉");
       setSuccessMessage("Booking submitted successfully! 🎉");
-      
+
       form.reset();
       setCurrentStep(1);
     } catch (error) {
       console.error("Submission error:", error);
-      const message = error instanceof Error ? error.message : "Failed to submit booking. Please try again.";
+      const message =
+        error instanceof Error
+          ? error.message
+          : "Failed to submit booking. Please try again.";
       form.setError("root", {
         message,
       });
+      toast.error(message);
     } finally {
       setIsLoading(false);
     }

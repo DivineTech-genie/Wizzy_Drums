@@ -36,6 +36,7 @@ interface MediaDialogProps {
   isSubmitting: boolean;
 }
 
+/** Provides the media create/edit form with upload validation and previews. */
 export function MediaDialog({
   open,
   onOpenChange,
@@ -73,8 +74,11 @@ export function MediaDialog({
       return;
     }
 
-    if (file.size > 10 * 1024 * 1024) {
-      toast.error("File must be under 10MB");
+    const isVideo = file.type.startsWith("video/");
+    const maxSize = isVideo ? 100 * 1024 * 1024 : 10 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      toast.error(`File must be under ${isVideo ? "100MB" : "10MB"}`);
       e.target.value = "";
       return;
     }
@@ -89,7 +93,9 @@ export function MediaDialog({
       setPreviewUrl(url);
       toast.success("File uploaded successfully");
     } catch (error) {
-      toast.error("Failed to upload file");
+      const message =
+        error instanceof Error ? error.message : "Failed to upload file";
+      toast.error(message);
       setPreviewUrl(null);
       setValue("src", "");
     } finally {
