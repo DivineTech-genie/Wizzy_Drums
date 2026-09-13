@@ -1,32 +1,37 @@
-// components/ui/custom-form-field.tsx
 "use client";
 
 import {
   Field,
   FieldDescription,
   FieldLabel,
-  FieldError, // Added for rendering errors
+  FieldError,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { Controller, UseFormReturn } from "react-hook-form";
+import { Controller, UseFormReturn, FieldValues, Path } from "react-hook-form";
+import type { FocusEvent } from "react";
 
-interface CustomFieldProps {
-  form: UseFormReturn<any>;
-  name: string;
+interface CustomFieldProps<T extends FieldValues = FieldValues> {
+  form: UseFormReturn<T>;
+  name: Path<T>;
   label: string;
   type?: string;
   placeholder?: string;
-  description?: string; // Optional field helper text
+  description?: string;
+  onBlur?: (
+    e: FocusEvent<HTMLInputElement>,
+    field: { value: unknown; name: Path<T> },
+  ) => void;
 }
 
-export function CustomInputField({
+export function CustomInputField<T extends FieldValues = FieldValues>({
   form,
   name,
   label,
   type = "text",
   placeholder,
   description,
-}: CustomFieldProps) {
+  onBlur,
+}: CustomFieldProps<T>) {
   return (
     <Controller
       control={form.control}
@@ -35,7 +40,6 @@ export function CustomInputField({
         const hasError = !!error;
 
         return (
-          // Use data-invalid so shadcn styles the label/border red on error
           <Field className="space-y-1" data-invalid={hasError}>
             <FieldLabel htmlFor={field.name}>{label}</FieldLabel>
 
@@ -43,15 +47,21 @@ export function CustomInputField({
               id={field.name}
               type={type}
               placeholder={placeholder}
-              aria-invalid={hasError} // Accessible for screen readers
+              aria-invalid={hasError}
               autoComplete="on"
+              className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
               {...field}
+              onBlur={(e) => {
+                if (onBlur) {
+                  onBlur(e, field);
+                } else {
+                  field.onBlur();
+                }
+              }}
             />
 
-            {/* Render helper text if passed */}
             {description && <FieldDescription>{description}</FieldDescription>}
 
-            {/* Display validation error message automatically */}
             {hasError && <FieldError>{error?.message}</FieldError>}
           </Field>
         );

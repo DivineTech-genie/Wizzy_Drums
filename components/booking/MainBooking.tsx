@@ -14,11 +14,11 @@ import { Step2Logistics } from "./Step2-Logistics";
 import { Step3ClientInfo } from "./Step3-ClientInfo";
 import { Step4Deposit } from "./Step4Deposit";
 import { Step4Review } from "./Step4-Review";
+import { BookingSuccessModal } from "./BookingSuccessModal"; // ✅ import
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
-// Extend the schema to include specialRequests and termsAccepted
 const ExtendedBookingSchema = BookingFormSchema;
 
 // Mock booked dates - replace with API call
@@ -28,12 +28,27 @@ const mockBookedDates = [
   new Date(2026, 7, 1),
 ];
 
-/** Coordinates the multi-step booking form and submits completed bookings. */
+// Type for the submitted booking (for the modal)
+interface SubmittedBooking {
+  _id: string;
+  clientName: string;
+  clientEmail: string;
+  eventType: string;
+  eventDate: string | Date;
+  eventTime: string;
+  eventLocation: string;
+  eventState: string;
+}
+
 export function MainBooking() {
   const [currentStep, setCurrentStep] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
-  const [successMessage, setSuccessMessage] = useState("");
   const [bookedDates, setBookedDates] = useState<Date[]>(mockBookedDates);
+
+  // ✅ Success modal state
+  const [showSuccess, setShowSuccess] = useState(false);
+  const [submittedBooking, setSubmittedBooking] =
+    useState<SubmittedBooking | null>(null);
 
   const totalSteps = 5;
   const stepLabels = [
@@ -169,8 +184,21 @@ export function MainBooking() {
         throw new Error(message);
       }
 
+      setSubmittedBooking({
+        _id: result.data._id,
+        clientName: data.clientName,
+        clientEmail: data.clientEmail,
+        eventType: data.eventType,
+        eventDate: data.eventDate,
+        eventTime: data.eventTime,
+        eventLocation: data.eventLocation,
+        eventState: data.eventState,
+      });
+
+      // ✅ Open the success modal
+      setShowSuccess(true);
+
       toast.success("Booking submitted successfully! 🎉");
-      setSuccessMessage("Booking submitted successfully! 🎉");
 
       form.reset();
       setCurrentStep(1);
@@ -219,14 +247,7 @@ export function MainBooking() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Success Message */}
-      {successMessage && (
-        <div className="mb-6 p-4 rounded-xl bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 text-green-700 dark:text-green-300 text-center">
-          {successMessage}
-        </div>
-      )}
-
+    <div className="md:w-4xl w-full mx-auto px-4 py-8">
       {/* Step Indicator */}
       <div className="mb-8">
         <StepIndicator
@@ -260,7 +281,7 @@ export function MainBooking() {
         </div>
       )}
 
-      {currentStep === totalSteps && !successMessage && (
+      {currentStep === totalSteps && (
         <div className="flex justify-between mt-6">
           <Button variant="outline" onClick={prevStep} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
@@ -285,6 +306,16 @@ export function MainBooking() {
           </Button>
         </div>
       )}
+
+      {/* ✅ Success Modal */}
+      <BookingSuccessModal
+        open={showSuccess}
+        onOpenChange={(open) => {
+          setShowSuccess(open);
+          if (!open) form.reset();
+        }}
+        booking={submittedBooking}
+      />
     </div>
   );
 }

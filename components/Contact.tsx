@@ -36,8 +36,8 @@ export default function ContactPage() {
     {
       icon: Mail,
       label: "Email",
-      value: "hello@stagebook.com",
-      href: "mailto:hello@stagebook.com",
+      value: "hello@wizzydrums.com",
+      href: "mailto:hello@wizzydrums.com",
     },
     {
       icon: Phone,

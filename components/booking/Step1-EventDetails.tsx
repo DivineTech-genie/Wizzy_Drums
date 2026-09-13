@@ -8,7 +8,7 @@ import { CustomInputField } from "../CustomForm";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { useBookingPricing } from "@/hooks/useBookingPricing";
 import { useEvents } from "@/hooks/useEvents";
-
+import { appendSuffixIfMissing } from "@/lib/form-helpers";
 
 interface Step1EventDetailsProps {
   form: UseFormReturn<BookingFormValues>;
@@ -149,40 +149,12 @@ export function Step1EventDetails({
               placeholder="Nigeria"
             />
 
-            <Controller
-              control={form.control}
+            <CustomInputField
+              form={form}
               name="eventState"
-              render={({ field, fieldState }) => (
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-1.5">
-                    State / Region
-                  </label>
-                  <input
-                    id={field.name}
-                    value={field.value || ""}
-                    onChange={(e) => field.onChange(e.target.value)}
-                    onBlur={(e) => {
-                      const val = (e.target as HTMLInputElement).value.trim();
-                      if (!val) {
-                        field.onBlur();
-                        return;
-                      }
-                      const lower = val.toLowerCase();
-                      if (!lower.includes("state")) {
-                        field.onChange(`${val} State`);
-                      }
-                      field.onBlur();
-                    }}
-                    placeholder="Lagos, Enugu, Abuja"
-                    className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                  />
-                  {fieldState.error && (
-                    <p className="text-red-500 text-xs mt-1">
-                      {String(fieldState.error.message)}
-                    </p>
-                  )}
-                </div>
-              )}
+              label="State / Region"
+              placeholder="Lagos, Enugu, Abuja"
+              onBlur={() => appendSuffixIfMissing(form, "eventState", "State")}
             />
           </div>
 

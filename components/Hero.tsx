@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import {
   Star,
@@ -19,35 +19,79 @@ import { HeroVideoSkeleton } from "@/components/ui/ContentSkeleton";
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 120]);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const observerRef = useRef<IntersectionObserver | null>(null);
   const [isMuted, setIsMuted] = useState(true);
-  const [isInView, setIsInView] = useState(false);
   const { getHeroVideo, isLoading } = useMedia();
   const heroVideo = getHeroVideo();
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    if (isInView) {
-      void video.play().catch(() => undefined);
-    } else {
-      video.pause();
+  // ✅ Callback ref — attaches observer at mount time
+  const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
+    // Clean up old observer
+    if (observerRef.current) {
+      observerRef.current.disconnect();
+      observerRef.current = null;
     }
-  }, [isInView, heroVideo?.src]);
 
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
+    videoRef.current = node;
+    if (!node) return;
 
+    // ✅ Set muted imperatively — React's muted prop is unreliable
+    node.muted = true;
+
+    // Try to play immediately
+    node.play().catch(() => undefined);
+
+    // Attach viewport observer
     const observer = new IntersectionObserver(
-      ([entry]) => setIsInView(entry.isIntersecting),
-      { threshold: 0.5 },
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          node.play().catch(() => {
+            // Fallback: ensure muted and retry
+            node.muted = true;
+            setIsMuted(true);
+            node.play().catch(() => undefined);
+          });
+        } else {
+          node.pause();
+        }
+      },
+      { threshold: 0.25 },
     );
 
-    observer.observe(video);
-    return () => observer.disconnect();
-  }, [heroVideo?.src]);
+    observer.observe(node);
+    observerRef.current = observer;
+  }, []);
+
+  // ✅ Pause when tab is hidden
+  useEffect(() => {
+    const handleVisibility = () => {
+      const video = videoRef.current;
+      if (!video) return;
+
+      if (document.hidden) {
+        video.pause();
+      } else {
+        const rect = video.getBoundingClientRect();
+        const inView = rect.top < window.innerHeight && rect.bottom > 0;
+        if (inView) video.play().catch(() => undefined);
+      }
+    };
+
+    document.addEventListener("visibilitychange", handleVisibility);
+    return () =>
+      document.removeEventListener("visibilitychange", handleVisibility);
+  }, []);
+
+  // ✅ Cleanup observer on unmount
+  useEffect(() => {
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+        observerRef.current = null;
+      }
+    };
+  }, []);
 
   const toggleMute = () => {
     const video = videoRef.current;
@@ -55,6 +99,11 @@ const Hero = () => {
 
     video.muted = !video.muted;
     setIsMuted(video.muted);
+
+    // Ensure video is playing after unmuting
+    if (!video.muted) {
+      video.play().catch(() => undefined);
+    }
   };
 
   return (
@@ -92,6 +141,7 @@ const Hero = () => {
           />
         </svg>
       </div>
+
       <motion.div
         className="container-custom relative z-10 pt-20"
         style={{ y }}
@@ -127,7 +177,7 @@ const Hero = () => {
               className="text-lg text-muted-foreground max-w-xl leading-8 mb-8"
             >
               From weddings and corporate launches to festivals and private
-              celebrations — we bring world-class performances, seamless
+              celebrations we bring world-class performances, seamless
               logistics, and unforgettable production value.
             </motion.p>
 
@@ -137,14 +187,17 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Link href="/book">
-                <Button size="lg" className="gap-2 shadow-lg shadow-primary/10">
+              <Link
+                href="/book"
+                className="flex items-center gap-2 shadow-lg shadow-primary/10"
+              >
+                <Button size="lg" className="">
                   Check Availability
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="#featured">
-                <Button size="lg" variant="outline" className="gap-2">
+              <Link href="/gallery" className="flex items-center gap-2">
+                <Button size="lg" variant="outline">
                   <Play className="h-4 w-4" />
                   Watch Reel
                 </Button>
@@ -192,52 +245,21 @@ const Hero = () => {
           >
             {isLoading ? (
               <HeroVideoSkeleton />
-            ) : heroVideo?.src ? (
-              <div className="relative overflow-hidden rounded-[2rem] border border-primary/10 bg-slate-950/80 shadow-2xl">
-                <video
-                  ref={videoRef}
-                  autoPlay
-                  muted={isMuted}
-                  loop
-                  playsInline
-                  className="h-full w-full object-cover md:h-130"
-                  poster={heroVideo.thumbnail}
-                >
-                  <source src={heroVideo.src} type="video/mp4" />
-                  Your browser does not support the video tag.
-                </video>
-
-                <div className="absolute inset-0 bg-linear-to-t from-slate-950/80 via-transparent to-transparent" />
-                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(56,189,248,0.24),transparent_34%)]" />
-
-                <div className="absolute left-6 top-6 rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-white/90 backdrop-blur-sm">
-                  Live preview
-                </div>
-
-                <button
-                  type="button"
-                  onClick={toggleMute}
-                  aria-label={isMuted ? "Unmute video" : "Mute video"}
-                  className="absolute right-4 top-4 z-10 inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/15 bg-slate-950/65 text-white shadow-lg backdrop-blur-sm transition hover:bg-slate-900/80"
-                >
-                  {isMuted ? (
-                    <VolumeX className="h-4 w-4" />
-                  ) : (
-                    <Volume2 className="h-4 w-4" />
-                  )}
-                </button>
-              </div>
             ) : (
               <div className="relative overflow-hidden rounded-[2rem] border border-primary/10 bg-slate-950/80 shadow-2xl">
                 <video
-                  ref={videoRef}
+                  ref={setVideoRef}
                   autoPlay
-                  muted={isMuted}
                   loop
                   playsInline
+                  preload="metadata"
                   className="h-full w-full object-cover md:h-130"
+                  poster={heroVideo?.thumbnail}
                 >
-                  <source src="/video/hero-video.mp4" type="video/mp4" />
+                  <source
+                    src={heroVideo?.src ?? "/video/hero-video.mp4"}
+                    type="video/mp4"
+                  />
                   Your browser does not support the video tag.
                 </video>
 
