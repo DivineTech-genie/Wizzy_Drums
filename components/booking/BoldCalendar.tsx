@@ -37,6 +37,7 @@ export function BoldCalendar({
 }: BoldCalendarProps) {
   const [currentMonth, setCurrentMonth] = useState(new Date());
   const [isClient, setIsClient] = useState(false);
+  // isClient not in use for now, but can be used for client-side only logic if needed in the future.
 
   useEffect(() => {
     setIsClient(true);

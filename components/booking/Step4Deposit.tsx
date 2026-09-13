@@ -175,19 +175,19 @@ export function Step4Deposit({ form }: Step4DepositProps) {
       </div>
 
       {/* Account details for transfer */}
-      <div className="rounded-xl border bg-muted/10 p-4">
-        <p className="text-sm font-medium">Bank transfer details</p>
-        <p className="text-xs text-muted-foreground mt-1">
+      <div className="rounded-xl border bg-muted/10 p-4 my-4">
+        <p className="text-md font-medium">Bank transfer details</p>
+        <p className="text-sm text-muted-foreground mt-1">
           Account name: {bankDetails.accountName}
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Bank: {bankDetails.bankName}
         </p>
-        <p className="text-xs text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Account number: {bankDetails.accountNumber}
         </p>
-        <p className="text-xs text-muted-foreground">Reference: {accountRef}</p>
-        <p className="text-xs text-muted-foreground mt-2">
+        <p className="text-sm text-muted-foreground">Reference: {accountRef}</p>
+        <p className="text-xs text-red-900 mt-2">
           Please transfer the deposit to the account above and upload your
           transfer receipt below.
         </p>

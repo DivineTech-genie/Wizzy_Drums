@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { Plane, Hotel, MapPin } from "lucide-react";
+import { Plane, Hotel, MapPin, TriangleAlert } from "lucide-react";
 import { toast } from "sonner";
 import { TravelLogisticsForm } from "../Travel.logistics";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
@@ -38,12 +38,14 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     depositRate,
     depositAmount,
     flightDepositAmount,
-    totalDeposit,
     isLoading,
   } = useBookingPricing(eventType, cannotAffordFlight);
 
   const isEastern = isEasternNigeriaState(eventState);
   const requiresFlightUpload = !!providesFlight;
+  const requiresAccommodationUpload = !!form.watch("requiresAccommodation");
+  const shouldShowUploadSection =
+    requiresFlightUpload || requiresAccommodationUpload;
 
   const handleFlightFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -122,7 +124,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 ">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-heading font-bold">Travel & Logistics</h2>
@@ -132,7 +134,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
       </div>
 
       {/* Dynamic Message - Shows event summary */}
-      <div className="p-4 rounded-xl bg-primary/5 border border-primary/10">
+      <div className="p-4 rounded-xl bg-mauve-50 border border-primary/10">
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
             <MapPin className="h-4 w-4 text-primary" />
@@ -166,21 +168,26 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
       {/* Logistics Section */}
       <TravelLogisticsForm form={form} />
 
-      {eventState.trim() !== "" &&
+      {/* {eventState.trim() !== "" &&
         !isEastern &&
         !providesFlight &&
         !cannotAffordFlight && (
-          <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-amber-900">
-            ⚠️ Please choose a flight arrangement option. If you cannot provide
-            flights, select &quot;Charge flights to quote&quot; and an
-            additional flight deposit will be included.
+          <div className="rounded-xl border  p-4 text-red-900">
+            <p className="text-xs flex items-center gap-2 ">
+              <span>
+                <TriangleAlert />
+              </span>
+              Please choose a flight arrangement option. If you cannot provide
+              flights, select &quot;Charge flights to quote&quot; and an
+              additional flight deposit will be included.
+            </p>
           </div>
-        )}
+        )} */}
 
       {cannotAffordFlight && (
-        <div className="rounded-xl border border-primary/10 bg-primary/5 p-4 text-primary-900">
-          <p className="font-medium">Flight deposit included</p>
-          <p className="text-sm text-muted-foreground">
+        <div className="rounded-xl bg-mauve-100 border border-primary/10 p-4 text-red-900">
+          <p className="font-medium text-sm">Flight deposit included</p>
+          <p className="text-xs text-red-900 ">
             Because you chose to charge flights to the quote, an additional
             deposit of ₦{flightDepositAmount.toLocaleString()} will be added to
             your booking deposit.
@@ -188,34 +195,36 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         </div>
       )}
 
-      {requiresFlightUpload && (
+      {shouldShowUploadSection && (
         <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-4">
           {uploadError ? (
             <p className="text-sm text-destructive">{uploadError}</p>
           ) : null}
 
-          <div>
-            <label className="mb-1 block text-sm font-medium">
-              Upload flight ticket
-            </label>
-            <input
-              type="file"
-              accept=".pdf,image/*"
-              onChange={handleFlightFileUpload}
-              disabled={uploadingFlight}
-              className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
-            />
-            {uploadingFlight && (
-              <p className="mt-1 text-xs text-primary">Uploading...</p>
-            )}
-            {form.watch("flightTicketUrl") && (
-              <p className="mt-1 text-xs text-green-600">
-                ✅ Flight ticket uploaded
-              </p>
-            )}
-          </div>
+          {requiresFlightUpload && (
+            <div>
+              <label className="mb-1 block text-sm font-medium">
+                Upload flight ticket
+              </label>
+              <input
+                type="file"
+                accept=".pdf,image/*"
+                onChange={handleFlightFileUpload}
+                disabled={uploadingFlight}
+                className="block w-full text-sm text-muted-foreground file:mr-4 file:rounded file:border-0 file:bg-primary file:px-3 file:py-1.5 file:text-sm file:font-semibold file:text-primary-foreground hover:file:bg-primary/90 disabled:opacity-50"
+              />
+              {uploadingFlight && (
+                <p className="mt-1 text-xs text-primary">Uploading...</p>
+              )}
+              {form.watch("flightTicketUrl") && (
+                <p className="mt-1 text-xs text-green-600">
+                  ✅ Flight ticket uploaded
+                </p>
+              )}
+            </div>
+          )}
 
-          {(form.watch("requiresAccommodation") || requiresFlightUpload) && (
+          {requiresAccommodationUpload && (
             <div>
               <label className="mb-1 block text-sm font-medium">
                 Upload hotel confirmation
