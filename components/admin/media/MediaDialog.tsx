@@ -36,6 +36,7 @@ interface MediaDialogProps {
   isSubmitting: boolean;
 }
 
+/** Provides the media create/edit form with upload validation and previews. */
 export function MediaDialog({
   open,
   onOpenChange,

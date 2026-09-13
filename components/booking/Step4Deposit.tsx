@@ -13,6 +13,7 @@ interface Step4DepositProps {
   form: UseFormReturn<BookingFormValues>;
 }
 
+/** Displays deposit instructions and uploads the booking receipt. */
 export function Step4Deposit({ form }: Step4DepositProps) {
   const eventType =
     useWatch({

@@ -80,6 +80,7 @@ const DetailRow = ({
   </div>
 );
 
+/** Presents booking details and administrative status controls in a dialog. */
 export function BookingDetailsModal({
   booking,
   open,

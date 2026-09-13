@@ -27,6 +27,7 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { useBookings } from "@/hooks/admin/useBooking";
 
+/** Displays booking logistics and allows administrators to verify them. */
 export default function LogisticsPage() {
   const [search, setSearch] = useState("");
   const [activeTab, setActiveTab] = useState("all");

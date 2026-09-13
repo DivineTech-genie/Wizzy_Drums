@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { useMedia } from "@/hooks/useMedia";
 import { HeroVideoSkeleton } from "@/components/ui/ContentSkeleton";
 
+/** Renders the landing-page hero and controls video playback and audio. */
 const Hero = () => {
   const { scrollY } = useScroll();
   const y = useTransform(scrollY, [0, 500], [0, 120]);

@@ -33,6 +33,7 @@ const getTypeColor = (type: string) => {
     : "bg-purple-500/10 text-purple-500";
 };
 
+/** Displays a media item with view, edit, hero, and delete actions. */
 export function MediaCard({
   item,
   isFirst,

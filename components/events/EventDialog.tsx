@@ -23,6 +23,7 @@ interface EventDialogProps {
   isSubmitting: boolean;
 }
 
+/** Provides the event create/edit form with image upload handling. */
 export function EventDialog({
   open,
   onOpenChange,

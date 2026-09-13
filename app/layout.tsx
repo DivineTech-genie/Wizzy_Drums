@@ -8,6 +8,7 @@ export const metadata: Metadata = {
     "Book professional performances for weddings, corporate events, festivals, and nightclubs. Get a quote today!",
 };
 
+/** Provides the application shell and global toast notification host. */
 export default function RootLayout({
   children,
 }: Readonly<{

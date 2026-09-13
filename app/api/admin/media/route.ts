@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
   }
 }
 
-// POST create new media
+/** Creates a validated media record for an authenticated administrator. */
 export async function POST(req: NextRequest) {
   try {
     const auth = await verifyAuth(req);

@@ -9,6 +9,7 @@ interface AdminDashboardProps extends BookingFormValues {
   status: "pending" | "confirmed" | "cancelled";
 }
 
+/** Displays bookings and provides status and deletion controls. */
 export default function AdminDashboard() {
   const [bookings, setBookings] = useState<AdminDashboardProps[]>([]);
   const [loading, setLoading] = useState(true);
