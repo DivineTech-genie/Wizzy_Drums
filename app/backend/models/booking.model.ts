@@ -19,6 +19,7 @@ export interface IBooking extends Document {
   hotelTicketUrl?: string | null;
   depositReceiptUrl?: string | null;
   logisticsVerified: boolean;
+  adminNote?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -47,6 +48,7 @@ const bookingSchema = new Schema<IBooking>(
     cannotAffordFlight: { type: Boolean, default: false }, // If they check "can't afford/provide flight"
     requiresAccommodation: { type: Boolean, default: false },
     logisticsVerified: { type: Boolean, default: false },
+    adminNote: { type: String, default: "" },
 
     // Secure Document Upload URLs
     flightTicketUrl: { type: String, default: null },

@@ -57,7 +57,7 @@ interface BookingDetailsModalProps {
     id: string,
     status: Booking["status"],
     note?: string,
-  ) => void;
+  ) => Promise<boolean> | void;
 }
 
 const DetailRow = ({
@@ -88,29 +88,65 @@ export function BookingDetailsModal({
 }: BookingDetailsModalProps) {
   const [adminNote, setAdminNote] = useState("");
   const [showNoteInput, setShowNoteInput] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!booking) return null;
 
   const isOutOfState = booking.eventState?.toLowerCase() !== "enugu";
   const status = booking.status || "pending";
 
-  const handleConfirm = () => {
-    if (showNoteInput) {
-      onStatusChange?.(booking._id, "confirmed", adminNote);
+  const handleConfirm = async () => {
+    if (!showNoteInput) {
+      setShowNoteInput(true);
+      return;
+    }
+
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      const result = await onStatusChange?.(
+        booking._id,
+        "confirmed",
+        adminNote,
+      );
+      // If the parent returned false, treat as failure
+      if (result === false) return;
+      // Close modal and reset note on success
+      onOpenChange(false);
       setShowNoteInput(false);
       setAdminNote("");
-      toast.success("Booking confirmed and email sent");
-    } else {
-      setShowNoteInput(true);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  const handleCancel = () => {
-    if (confirm("Are you sure you want to cancel this booking?")) {
-      onStatusChange?.(booking._id, "cancelled", adminNote);
-      toast.success("Booking cancelled");
-    } else {
-      toast.info("Booking cancellation was skipped");
+  const handleCancel = async () => {
+    // If admin hasn't opened the note input yet, show it first
+    if (!showNoteInput) {
+      setShowNoteInput(true);
+      return;
+    }
+
+    if (!confirm("Are you sure you want to cancel this booking?")) {
+      return;
+    }
+
+    if (isProcessing) return;
+    setIsProcessing(true);
+
+    try {
+      const result = await onStatusChange?.(
+        booking._id,
+        "cancelled",
+        adminNote,
+      );
+      if (result === false) return;
+      onOpenChange(false);
+      setShowNoteInput(false);
+      setAdminNote("");
+    } finally {
+      setIsProcessing(false);
     }
   };
 
@@ -297,7 +333,11 @@ export function BookingDetailsModal({
           {onStatusChange && status === "pending" && (
             <div className="space-y-3">
               {!showNoteInput ? (
-                <Button onClick={handleConfirm} className="w-full">
+                <Button
+                  onClick={handleConfirm}
+                  className="w-full"
+                  disabled={isProcessing}
+                >
                   Confirm Booking
                 </Button>
               ) : (
@@ -309,7 +349,11 @@ export function BookingDetailsModal({
                     rows={3}
                   />
                   <div className="flex gap-3">
-                    <Button onClick={handleConfirm} className="flex-1">
+                    <Button
+                      onClick={handleConfirm}
+                      className="flex-1"
+                      disabled={isProcessing}
+                    >
                       Confirm
                     </Button>
                     <Button
@@ -319,6 +363,7 @@ export function BookingDetailsModal({
                         setAdminNote("");
                       }}
                       className="flex-1"
+                      disabled={isProcessing}
                     >
                       Cancel
                     </Button>
@@ -329,6 +374,7 @@ export function BookingDetailsModal({
                 variant="destructive"
                 onClick={handleCancel}
                 className="w-full"
+                disabled={isProcessing}
               >
                 Cancel Booking
               </Button>

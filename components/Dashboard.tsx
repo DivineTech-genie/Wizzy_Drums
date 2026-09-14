@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 
 interface AdminDashboardProps extends BookingFormValues {
@@ -56,10 +55,16 @@ export default function AdminDashboard() {
   ) => {
     setActionLoadingId(id);
     try {
-      const response = await fetch(`/api/bookings/${id}`, {
+      // Prompt admin for an optional note to include with the status change
+      const adminNote =
+        window.prompt("Optional note to the client (leave blank to skip):") ||
+        "";
+
+      const response = await fetch(`/api/admin/bookings/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+        body: JSON.stringify({ status: newStatus, adminNote }),
       });
 
       const result = await response.json();
@@ -76,13 +81,8 @@ export default function AdminDashboard() {
             : booking,
         ),
       );
-      toast.success(
-        newStatus === "confirmed"
-          ? "Booking confirmed successfully"
-          : "Booking cancelled successfully",
-      );
     } catch (err: any) {
-      toast.error(err.message || "Failed to update booking status");
+      alert(err.message);
     } finally {
       setActionLoadingId(null);
     }
@@ -95,7 +95,6 @@ export default function AdminDashboard() {
         "Are you sure you want to permanently delete this booking request?",
       )
     ) {
-      toast.info("Booking deletion cancelled");
       return;
     }
 
@@ -115,9 +114,8 @@ export default function AdminDashboard() {
       setBookings((prev) =>
         prev.filter((booking) => booking._id.toString() !== id),
       );
-      toast.success("Booking deleted successfully");
     } catch (err: any) {
-      toast.error(err.message || "Failed to delete booking");
+      alert(err.message);
     } finally {
       setActionLoadingId(null);
     }

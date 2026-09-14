@@ -21,6 +21,26 @@ export function VideoEmbed({
 }: VideoEmbedProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
+  // Extract YouTube/Vimeo embed URL
+  const getEmbedUrl = (url: string) => {
+    if (url.includes("youtube.com/watch?v=")) {
+      const videoId = url.split("v=")[1]?.split("&")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes("youtu.be/")) {
+      const videoId = url.split("youtu.be/")[1]?.split("?")[0];
+      return `https://www.youtube.com/embed/${videoId}`;
+    }
+    if (url.includes("vimeo.com/")) {
+      const videoId = url.split("vimeo.com/")[1]?.split("/")[0];
+      return `https://player.vimeo.com/video/${videoId}`;
+    }
+    return url;
+  };
+
+  const embedUrl = getEmbedUrl(src);
+  const isLocalVideo = /\.(mp4|webm|ogg)$/i.test(embedUrl);
+
   if (!isPlaying) {
     return (
       <div
@@ -56,15 +76,31 @@ export function VideoEmbed({
     );
   }
 
+  // If the resolved URL is a direct video file, render a <video> element
+  if (isLocalVideo) {
+    return (
+      <div className={cn("aspect-video rounded-lg overflow-hidden", className)}>
+        <video
+          src={embedUrl}
+          controls
+          autoPlay
+          playsInline
+          className="w-full h-full object-contain bg-black"
+          poster={thumbnail}
+        />
+      </div>
+    );
+  }
+
+  // Otherwise treat it as an embed (YouTube/Vimeo)
   return (
     <div className={cn("aspect-video rounded-lg overflow-hidden", className)}>
-      <video
-        src={src}
-        controls
-        autoPlay
-        playsInline
-        className="w-full h-full object-contain bg-black"
-        poster={thumbnail}
+      <iframe
+        src={embedUrl}
+        title={title}
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+        allowFullScreen
+        className="w-full h-full"
       />
     </div>
   );

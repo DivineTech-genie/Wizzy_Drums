@@ -156,7 +156,7 @@ export function TravelLogisticsForm({
                   }}
                 />
                 <div>
-                  <p className="font-medium">Hotel Accomodations</p>
+                  <p className="font-medium">Hotel Accomodation</p>
                   <p className="text-xs text-muted-foreground">
                     Upload Hotel information below if the event requires an
                     overnight stay.

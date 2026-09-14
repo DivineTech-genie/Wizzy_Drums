@@ -142,7 +142,7 @@ export function BookingSuccessModal({
           <div className="rounded-lg bg-primary/5 border border-primary/10 p-3 flex items-start gap-2">
             <Mail className="h-4 w-4 text-primary mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground">
-              A confirmation email has been sent to{" "}
+              A confirmation email Will be sent to{" "}
               <span className="font-medium text-foreground">
                 {booking.clientEmail}
               </span>

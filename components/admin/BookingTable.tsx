@@ -48,7 +48,10 @@ interface Booking {
 interface BookingsTableProps {
   bookings: Booking[];
   onView: (booking: Booking) => void;
-  onStatusChange: (id: string, status: Booking["status"]) => void;
+  onStatusChange: (
+    id: string,
+    status: Booking["status"],
+  ) => Promise<boolean> | void;
   onDelete: (id: string) => void;
   loading?: boolean;
 }

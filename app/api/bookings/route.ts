@@ -26,7 +26,6 @@ export async function GET() {
 }
 
 // src/app/api/bookings/route.ts
-
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
@@ -69,8 +68,7 @@ export async function POST(req: NextRequest) {
       eventDate: targetDate,
     });
 
-    // Send confirmation email (non-blocking)
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-email`, {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-email`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -79,22 +77,27 @@ export async function POST(req: NextRequest) {
         eventType: newBooking.eventType,
         eventDate: newBooking.eventDate,
         eventLocation: newBooking.eventLocation,
+        status: "pending",
+        eventTime: newBooking.eventTime,
       }),
     }).catch((err) => console.error("Failed to send email:", err));
 
     // Send email to admin
-    const adminEmail = process.env.ADMIN_EMAIL || "admin@stagebook.com";
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-admin-notification`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        to: adminEmail,
-        booking: newBooking,
-      }),
-    }).catch((err) => console.error("Failed to send admin email:", err));
+    const adminEmail = process.env.ADMIN_EMAIL;
+    await fetch(
+      `${process.env.NEXT_PUBLIC_APP_URL}/api/send-admin-notification`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          to: adminEmail,
+          booking: newBooking,
+        }),
+      },
+    ).catch((err) => console.error("Failed to send admin email:", err));
 
     // Also create in-app notification
-    fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/notifications`, {
+    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/notifications`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

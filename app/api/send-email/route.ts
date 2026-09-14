@@ -19,10 +19,21 @@ export async function POST(request: Request) {
       eventTime,
     } = await request.json();
 
+    // Build a dynamic subject based on booking status
+    const shortDate = eventDate ? `${eventDate}` : "your date";
+    let subject = `Booking Update — ${eventType || "your event"} on ${shortDate}`;
+    if (status === "confirmed") {
+      subject = "Booking Confirmation ";
+    } else if (status === "cancelled") {
+      subject = "Booking Cancelled ";
+    } else if (status === "pending") {
+      subject = "Booking Confirmation Pending ";
+    }
+
     const { data, error } = await resend.emails.send({
       from: "Wizzy Drums <onboarding@resend.dev>", // Replace with your sender address
       to: [clientEmail],
-      subject: "Your Booking Confirmation",
+      subject,
       react: BookingConfirmation({
         clientName,
         eventType,

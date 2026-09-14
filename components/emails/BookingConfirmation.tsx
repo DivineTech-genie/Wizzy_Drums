@@ -1,4 +1,3 @@
-import * as React from "react";
 import {
   Html,
   Body,
@@ -171,8 +170,8 @@ export const BookingConfirmation = ({
           <Section style={footerSection}>
             <Text style={footerText}>
               Need to make changes? Contact us at{" "}
-              <a href="mailto:hello@wizzydrums.com" style={footerLink}>
-                hello@wizzydrums.com
+              <a href="mailto:wisdomchukwu606@gmail.com" style={footerLink}>
+                wisdomchukwu606@gmail.com
               </a>
             </Text>
             <Text style={footerSmall}>
