@@ -64,13 +64,15 @@ export function MediaCard({
             </div>
           ) : (
             <div className="w-full h-full flex items-center justify-center bg-muted/20">
-              {item.thumbnail ? (
-                <Image
+              {item.src ? (
+                <video
                   src={item.src}
-                  alt={item.title}
-                  width={item.width}
-                  height={item.height}
                   className="w-full h-full object-cover"
+                  autoPlay
+                  muted
+                  loop
+                  playsInline
+                  preload="metadata"
                 />
               ) : (
                 <Film className="h-12 w-12 text-muted-foreground/30" />

@@ -61,6 +61,7 @@ export default function LogisticsPage() {
     try {
       const response = await fetch(`/api/admin/bookings/${id}`, {
         method: "PATCH",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ logisticsVerified: verified }),
       });

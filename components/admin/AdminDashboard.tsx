@@ -53,7 +53,7 @@ export default function AdminDashboard() {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         toast.error(errorData.message || "Failed to update booking status");
-        return;
+        return false;
       }
 
       const booking = await response.json().catch(() => null);
@@ -88,9 +88,11 @@ export default function AdminDashboard() {
       }
 
       refetch();
+      return true;
     } catch (error) {
       console.error("Failed to update status:", error);
       toast.error("An error occurred while updating the booking status");
+      return false;
     }
   };
 

@@ -30,15 +30,27 @@ export function GalleryItem({ item, onClick, className }: GalleryItemProps) {
     >
       {/* Image/Thumbnail */}
       <div className="relative aspect-4/3 overflow-hidden bg-muted">
-        <Image
-          src={isVideo ? item.thumbnail || item.src : item.src}
-          alt={item.title}
-          width={item.width ?? 1000}
-          height={item.height ?? 1000}
-          sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
-          className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
-          loading="lazy"
-        />
+        {isVideo ? (
+          <video
+            src={item.src}
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+            autoPlay
+            muted
+            loop
+            playsInline
+            preload="metadata"
+          />
+        ) : (
+          <Image
+            src={item.src}
+            alt={item.title}
+            width={item.width ?? 1000}
+            height={item.height ?? 1000}
+            sizes="(min-width:1024px) 25vw, (min-width:768px) 33vw, 50vw"
+            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-110"
+            loading="lazy"
+          />
+        )}
 
         {/* Video Play Button Overlay */}
         {isVideo && (
