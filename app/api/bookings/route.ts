@@ -1,19 +1,33 @@
 import { connectDB } from "@/app/backend/config/db";
 import Booking from "@/app/backend/models/booking.model";
+import Notification from "@/app/backend/models/notification";
 import { BookingFormSchema } from "@/app/backend/validators/validators";
+import { BookingConfirmation } from "@/components/emails/BookingConfirmation";
+import AdminEmail from "@/components/emails/AdminEmail";
 import { NextResponse, NextRequest } from "next/server";
+import { Resend } from "resend";
+import { formatDate } from "@/lib/dates";
 
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+// ✅ PUBLIC GET — only returns confirmed bookings (for calendar blocking)
 export async function GET() {
   try {
     await connectDB();
 
-    const allBookings = await Booking.find({}).sort({ eventDate: 1 });
+    const confirmedBookings = await Booking.find({ status: "confirmed" })
+      .select("eventDate status")
+      .sort({ eventDate: 1 });
+
     return NextResponse.json(
-      { status: "success", results: allBookings.length, data: allBookings },
+      {
+        status: "success",
+        results: confirmedBookings.length,
+        data: confirmedBookings,
+      },
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("GET /api/bookings error:", error);
     return NextResponse.json(
       {
         status: "error",
@@ -25,41 +39,43 @@ export async function GET() {
   }
 }
 
-// src/app/api/bookings/route.ts
+// POST — create new booking
 export async function POST(req: NextRequest) {
   try {
     await connectDB();
     const rawData = await req.json();
     const validationResult = BookingFormSchema.safeParse(rawData);
 
-    // 1. Validation Fail (HTTP 400 Bad Request)
     if (!validationResult.success) {
       return NextResponse.json(
         {
           status: "error",
           errors: validationResult.error.flatten().fieldErrors,
         },
-        { status: 400 }, // <--- Pass the REAL HTTP status here!
+        { status: 400 },
       );
     }
 
     const validatedData = validationResult.data;
 
-    // Normalize Date before checking
+    // Normalize Date
     const targetDate = new Date(validatedData.eventDate);
     targetDate.setUTCHours(0, 0, 0, 0);
 
-    const existingBooking = await Booking.findOne({ eventDate: targetDate });
+    // Only CONFIRMED bookings block a date
+    const existingBooking = await Booking.findOne({
+      eventDate: targetDate,
+      status: "confirmed",
+    });
 
-    // 2. Duplicate Check Fail (HTTP 409 Conflict)
     if (existingBooking) {
       return NextResponse.json(
         {
           status: "error",
           message:
-            "Sorry!, This Date is already booked. Please choose another date.",
+            "Sorry! This date is already booked. Please choose another date.",
         },
-        { status: 409 }, // <--- Real HTTP 409 Conflict
+        { status: 409 },
       );
     }
 
@@ -68,65 +84,50 @@ export async function POST(req: NextRequest) {
       eventDate: targetDate,
     });
 
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/send-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        clientEmail: newBooking.clientEmail,
-        clientName: newBooking.clientName,
-        eventType: newBooking.eventType,
-        eventDate: newBooking.eventDate,
-        eventLocation: newBooking.eventLocation,
-        status: "pending",
-        eventTime: newBooking.eventTime,
-      }),
-    }).catch((err) => console.error("Failed to send email:", err));
+    const shortDate = formatDate(new Date(newBooking.eventDate));
 
-    // Send email to admin
-    const adminEmail = process.env.ADMIN_EMAIL;
-    await fetch(
-      `${process.env.NEXT_PUBLIC_APP_URL}/api/send-admin-notification`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          to: adminEmail,
-          booking: newBooking,
+    await Promise.allSettled([
+      // 1. Client confirmation email
+      resend.emails.send({
+        from: "Wizzy Drums <onboarding@resend.dev>",
+        to: [newBooking.clientEmail],
+        subject: `Booking Request Received`,
+        react: BookingConfirmation({
+          clientName: newBooking.clientName,
+          eventType: newBooking.eventType,
+          eventDate: shortDate,
+          eventLocation: newBooking.eventLocation,
+          eventTime: newBooking.eventTime,
+          status: "pending",
         }),
-      },
-    ).catch((err) => console.error("Failed to send admin email:", err));
+      }),
 
-    // Also create in-app notification
-    await fetch(`${process.env.NEXT_PUBLIC_APP_URL}/api/admin/notifications`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+      // 2. Admin notification email
+      resend.emails.send({
+        from: "Wizzy Drums <onboarding@resend.dev>",
+        to: [process.env.ADMIN_EMAIL!],
+        subject: `📅 New Booking: ${newBooking.clientName} — ${newBooking.eventType}`,
+        react: AdminEmail({ booking: newBooking }),
+      }),
+
+      // 3. In-app notification (direct DB write — no auth needed)
+      Notification.create({
+        userId: "admin",
         title: "New Booking!",
-        message: `${newBooking.clientName} just booked a ${newBooking.eventType} event on ${new Date(newBooking.eventDate).toLocaleDateString()}`,
+        message: `${newBooking.clientName} just booked a ${newBooking.eventType} event on ${shortDate}`,
         type: "booking",
         link: `/admin/bookings/${newBooking._id}`,
       }),
-    }).catch((err) => console.error("Failed to create notification:", err));
+    ]);
 
-    // 3. Successful Creation (HTTP 201 Created)
-    if (newBooking) {
-      return NextResponse.json(
-        {
-          status: "success",
-          message: "Date booked successfully",
-          data: newBooking,
-        },
-        { status: 201 }, // <--- Real HTTP 201 Created
-      );
-    } else {
-      return NextResponse.json(
-        {
-          status: "error",
-          message: "Sorry!, booking failed.",
-        },
-        { status: 500 }, // <--- Real HTTP 500 Internal Server Error
-      );
-    }
+    return NextResponse.json(
+      {
+        status: "success",
+        message: "Date booked successfully",
+        data: newBooking,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     console.error("POST /api/bookings error:", error);
     return NextResponse.json(
@@ -134,10 +135,9 @@ export async function POST(req: NextRequest) {
         status: "error",
         message: "Internal server error.",
         error: error instanceof Error ? error.message : String(error),
-        // Include stack in development to aid debugging
         stack: error instanceof Error ? error.stack : undefined,
       },
-      { status: 500 }, // <--- Real HTTP 500
+      { status: 500 },
     );
   }
 }

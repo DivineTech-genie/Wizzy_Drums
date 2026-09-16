@@ -1,4 +1,3 @@
-// app/api/admin/bookings/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/app/backend/config/db";
 import Booking from "@/app/backend/models/booking.model";
@@ -6,12 +5,11 @@ import { verifyAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-
     const auth = await verifyAuth(req);
     if (!auth) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
     }
-    
+
     await connectDB();
 
     const searchParams = req.nextUrl.searchParams;
@@ -48,8 +46,7 @@ export async function GET(req: NextRequest) {
         pages: Math.ceil(total / limit),
       },
     });
-  } catch (error) {
-    console.error("Admin bookings error:", error);
+  } catch {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 },

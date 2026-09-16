@@ -11,10 +11,6 @@ export async function PATCH(
     const token = req.cookies.get("admin_token")?.value;
     const auth = await verifyAuth(req);
     if (!auth) {
-      console.warn(
-        "Admin booking PATCH unauthorized. admin_token present:",
-        !!token,
-      );
       return NextResponse.json(
         {
           message: token
@@ -65,7 +61,6 @@ export async function PATCH(
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("Admin booking PATCH error:", error);
     return NextResponse.json(
       { status: "error", message: error?.message || "Update failed" },
       { status: 500 },

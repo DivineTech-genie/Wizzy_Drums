@@ -6,7 +6,7 @@ import Link from "next/link";
 import { GalleryGrid } from "@/components/gallery/GalleryGrid";
 
 export const metadata: Metadata = {
-  title: "Performance Gallery | StageBook",
+  title: "Wizzy Drums| Performance Gallery ",
   description:
     "View stunning performance photos and videos from weddings, corporate events, festivals, and nightclubs across Nigeria.",
 };

@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { Plane, Hotel, MapPin, TriangleAlert } from "lucide-react";
+import {
+  Plane,
+  Hotel,
+  MapPin,
+  TriangleAlert,
+  CheckCircle2,
+} from "lucide-react";
 import { toast } from "sonner";
 import { TravelLogisticsForm } from "../Travel.logistics";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
@@ -32,7 +38,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     useWatch({ control: form.control, name: "eventCountry" }) || "";
   const eventDate = useWatch({ control: form.control, name: "eventDate" });
 
-  // 🔥 Use the pricing hook
+  // Use the pricing hook
   const {
     eventPrice,
     depositRate,
@@ -65,7 +71,6 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         error instanceof Error
           ? error.message
           : "Failed to upload flight ticket.";
-      console.error("Flight upload error:", error);
       setUploadError(message);
       toast.error(message);
     } finally {
@@ -91,7 +96,6 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         error instanceof Error
           ? error.message
           : "Failed to upload hotel confirmation.";
-      console.error("Hotel upload error:", error);
       setUploadError(message);
       toast.error(message);
     } finally {
@@ -217,8 +221,9 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
                 <p className="mt-1 text-xs text-primary">Uploading...</p>
               )}
               {form.watch("flightTicketUrl") && (
-                <p className="mt-1 text-xs text-green-600">
-                  ✅ Flight ticket uploaded
+                <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Flight ticket uploaded
                 </p>
               )}
             </div>
@@ -240,8 +245,9 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
                 <p className="mt-1 text-xs text-primary">Uploading...</p>
               )}
               {form.watch("hotelTicketUrl") && (
-                <p className="mt-1 text-xs text-green-600">
-                  ✅ Hotel confirmation uploaded
+                <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  Hotel confirmation uploaded
                 </p>
               )}
             </div>

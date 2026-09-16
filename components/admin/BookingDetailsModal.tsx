@@ -1,6 +1,5 @@
 "use client";
 
-import { format } from "date-fns";
 import {
   Dialog,
   DialogContent,
@@ -25,7 +24,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
-import { toast } from "sonner";
+import { formatDate } from "@/lib/dates";
 
 interface Booking {
   _id: string;
@@ -186,7 +185,7 @@ export function BookingDetailsModal({
             <DetailRow
               icon={<Calendar className="h-4 w-4" />}
               label="Submitted"
-              value={format(new Date(booking.createdAt), "dd MMM yyyy, h:mm a")}
+              value={formatDate(new Date(booking.createdAt))}
             />
           </div>
 
@@ -197,7 +196,7 @@ export function BookingDetailsModal({
               <DetailRow
                 icon={<Calendar className="h-4 w-4" />}
                 label="Date"
-                value={format(new Date(booking.eventDate), "dd MMMM yyyy")}
+                value={formatDate(new Date(booking.eventDate)).replace(/-/g, "/")}
               />
               <DetailRow
                 icon={<Clock className="h-4 w-4" />}

@@ -26,6 +26,7 @@ import {
 import { format } from "date-fns";
 import { toast } from "sonner";
 import { useBookings } from "@/hooks/admin/useBooking";
+import { formatDate } from "@/lib/dates";
 
 export default function LogisticsPage() {
   const [search, setSearch] = useState("");
@@ -79,8 +80,7 @@ export default function LogisticsPage() {
           : "Logistics verification removed",
       );
       window.location.reload();
-    } catch (error) {
-      console.error("Failed to verify logistics:", error);
+    } catch {
       toast.error("An error occurred while updating logistics verification");
     }
   };
@@ -210,7 +210,7 @@ export default function LogisticsPage() {
                   <TableCell>
                     <p className="text-sm">{booking.eventType}</p>
                     <p className="text-xs text-muted-foreground">
-                      {format(new Date(booking.eventDate), "dd MMM yyyy")}
+                      {formatDate(new Date(booking.eventDate))}
                     </p>
                   </TableCell>
                   <TableCell>

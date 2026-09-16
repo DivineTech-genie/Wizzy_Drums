@@ -11,7 +11,6 @@ import {
   Button,
   Link,
 } from "@react-email/components";
-import { Drum } from "lucide-react";
 
 interface AdminEmailProps {
   booking: {
@@ -57,9 +56,44 @@ export const AdminEmail = ({ booking, adminUrl }: AdminEmailProps) => {
           {/* Header */}
           <Section style={header}>
             <div style={logoBadge}>
-              <Text style={logoText}>
-                <Drum />
-              </Text>
+              <div
+                style={{ textAlign: "center" as const, marginBottom: "12px" }}
+              >
+                <Text style={logoText}>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="36"
+                    height="36"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                    style={{ display: "inline-block", verticalAlign: "middle" }}
+                  >
+                    {/* Top rim */}
+                    <ellipse cx="12" cy="7" rx="9" ry="2.5" opacity="0.9" />
+                    {/* Body */}
+                    <path d="M3 7v8c0 1.4 4 2.5 9 2.5s9-1.1 9-2.5V7c0 1.4-4 2.5-9 2.5S3 8.4 3 7z" />
+                    {/* Crossed sticks */}
+                    <rect
+                      x="6"
+                      y="1"
+                      width="1.2"
+                      height="8"
+                      rx="0.6"
+                      transform="rotate(35 6.6 5)"
+                      opacity="0.85"
+                    />
+                    <rect
+                      x="16.8"
+                      y="1"
+                      width="1.2"
+                      height="8"
+                      rx="0.6"
+                      transform="rotate(-35 17.4 5)"
+                      opacity="0.85"
+                    />
+                  </svg>
+                </Text>
+              </div>
             </div>
             <Heading style={brandName}>Wizzy Drums</Heading>
             <Text style={brandSubtitle}>Admin Notification</Text>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Sidebar } from "@/components/admin/Sidebar";
+import { NotificationBell } from "@/components/notifications/Bell";
 
 export default function AdminLayout({
   children,
@@ -60,6 +61,7 @@ export default function AdminLayout({
                 Menu
               </button>
             </div>
+            <NotificationBell />
             {children}
           </div>
         </div>

@@ -45,8 +45,8 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
     try {
       await fetch("/api/auth/logout", { method: "POST" });
       router.push("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch {
+      router.push("/login");
     }
   };
   return (

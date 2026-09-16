@@ -10,7 +10,7 @@ export interface IMedia extends Document {
   date?: string;
   width?: number;
   height?: number;
-  isHero: boolean; // ⭐ Mark if this is the hero section video
+  isHero: boolean; // Mark if this is the hero section video
   order: number; // For sorting
   createdAt?: Date;
   updatedAt?: Date;

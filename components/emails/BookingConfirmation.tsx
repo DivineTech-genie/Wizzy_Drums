@@ -8,6 +8,7 @@ import {
   Hr,
   Row,
   Column,
+  Img, // ✅ import for favicon option
 } from "@react-email/components";
 
 interface BookingConfirmationProps {
@@ -29,28 +30,27 @@ export const BookingConfirmation = ({
   adminNote,
   eventTime,
 }: BookingConfirmationProps) => {
-  // Status-specific content
   const getStatusContent = () => {
     switch (status) {
       case "pending":
         return {
-          subject: "Booking Request Received 🎵",
+          subject: "Booking Request Received",
           heading: "We've Received Your Booking Request!",
           intro: `Thank you ${clientName} for your interest in booking us for your event!`,
           message:
             "Our team is reviewing your request and will get back to you within 24-48 hours with a personalized quote and availability confirmation.",
           buttonText: "View Your Request",
-          buttonColor: "#f59e0b", // amber
+          buttonColor: "#d4a548",
         };
       case "confirmed":
         return {
-          subject: "Booking Confirmed! 🎉",
+          subject: "Booking Confirmed!",
           heading: "Your Booking is Confirmed!",
           intro: `Dear ${clientName}, we're thrilled to confirm your booking!`,
           message:
             "Everything is locked in for your event. We're looking forward to performing and making your event unforgettable.",
           buttonText: "View Booking Details",
-          buttonColor: "#10b981", // emerald
+          buttonColor: "#10b981",
         };
       case "cancelled":
         return {
@@ -60,7 +60,7 @@ export const BookingConfirmation = ({
           message:
             "We understand that plans change. If you'd like to reschedule or have any questions, please don't hesitate to reach out.",
           buttonText: "Contact Us",
-          buttonColor: "#ef4444", // red
+          buttonColor: "#ef4444",
         };
       default:
         return {
@@ -69,7 +69,7 @@ export const BookingConfirmation = ({
           intro: `Dear ${clientName},`,
           message: "Your booking has been updated.",
           buttonText: "View Details",
-          buttonColor: "#3b82f6", // blue
+          buttonColor: "#3b82f6",
         };
     }
   };
@@ -80,10 +80,62 @@ export const BookingConfirmation = ({
     <Html>
       <Body style={main}>
         <Container style={container}>
-          {/* Header with logo placeholder */}
-          <Section style={headerSection}>
+          {/* ============ HEADER ============ */}
+          {/* <Section style={header}> */}
+          {/* ✅ Drum SVG (matches admin email) */}
+          {/* <div style={{ textAlign: "center" as const, marginBottom: "12px" }}>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="44"
+                height="44"
+                viewBox="0 0 24 24"
+                fill="#d4a548"
+                style={{ display: "inline-block", verticalAlign: "middle" }}
+              >
+                <ellipse cx="12" cy="7" rx="9" ry="2.5" opacity="0.9" />
+                <path d="M3 7v8c0 1.4 4 2.5 9 2.5s9-1.1 9-2.5V7c0 1.4-4 2.5-9 2.5S3 8.4 3 7z" />
+                <rect
+                  x="6"
+                  y="1"
+                  width="1.2"
+                  height="8"
+                  rx="0.6"
+                  transform="rotate(35 6.6 5)"
+                  opacity="0.85"
+                />
+                <rect
+                  x="16.8"
+                  y="1"
+                  width="1.2"
+                  height="8"
+                  rx="0.6"
+                  transform="rotate(-35 17.4 5)"
+                  opacity="0.85"
+                />
+              </svg>
+            </div>
+
             <Heading style={headerTitle}>Wizzy Drums</Heading>
-            <Text style={headerSubtitle}>Professional Event Entertainment</Text>
+            <Text style={headerSubtitle}>Professional Event Entertainment</Text> */}
+          {/* </Section> */}
+
+          {/* ✅ FAVICON ALTERNATIVE — uncomment this and remove the SVG above */}
+          <Section style={header}>
+            <Img
+              src={`${process.env.NEXT_PUBLIC_APP_URL}/images/drum-logo.jpg`}
+              alt="Wizzy Drums"
+              width="48"
+              height="48"
+              style={{
+                margin: "0 auto 12px",
+                display: "block",
+                borderRadius: "8px",
+              }}
+            />
+            <Heading style={headerTitle}>Wizzy Drums</Heading>
+            <Text style={headerSubtitle}>
+              Professional live drumming for events that refuse to be ordinary.
+            </Text>
           </Section>
 
           <Hr style={hr} />
@@ -116,12 +168,11 @@ export const BookingConfirmation = ({
             <Heading style={heading}>{content.heading}</Heading>
 
             <Text style={paragraph}>{content.intro}</Text>
-
             <Text style={paragraph}>{content.message}</Text>
 
             {/* Event Details Card */}
             <Section style={detailsCard}>
-              <Heading style={detailsTitle}>📋 Event Details</Heading>
+              <Heading style={detailsTitle}>Event Details</Heading>
               <Row style={detailRow}>
                 <Column style={detailLabel}>Event Type</Column>
                 <Column style={detailValue}>{eventType}</Column>
@@ -142,10 +193,10 @@ export const BookingConfirmation = ({
               </Row>
             </Section>
 
-            {/* Admin Note (if provided) */}
+            {/* Admin Note */}
             {adminNote && (
               <Section style={noteSection}>
-                <Text style={noteLabel}>📝 Note from our team:</Text>
+                <Text style={noteLabel}>Note from our team:</Text>
                 <Text style={noteContent}>&quot;{adminNote}&quot;</Text>
               </Section>
             )}
@@ -206,9 +257,9 @@ const container = {
   padding: "40px 30px",
 };
 
-const headerSection = {
+const header = {
   textAlign: "center" as const,
-  paddingBottom: "16px",
+  paddingBottom: "8px",
 };
 
 const headerTitle = {
@@ -216,6 +267,7 @@ const headerTitle = {
   fontWeight: "700",
   color: "#1a1a2e",
   marginBottom: "4px",
+  marginTop: "0",
 };
 
 const headerSubtitle = {
@@ -329,7 +381,6 @@ const button = {
   fontWeight: "600",
   color: "#ffffff",
   textDecoration: "none",
-  transition: "background-color 0.2s",
 };
 
 const footerSection = {
@@ -343,7 +394,7 @@ const footerText = {
 };
 
 const footerLink = {
-  color: "#3b82f6",
+  color: "#d4a548",
   textDecoration: "underline",
 };
 

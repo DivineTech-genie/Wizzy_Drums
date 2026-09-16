@@ -17,7 +17,6 @@ export async function GET() {
       { status: 200 },
     );
   } catch (error: any) {
-    console.error(" Media GET Error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },
@@ -53,7 +52,6 @@ export async function POST(request: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error(" Media POST Error:", error);
     return NextResponse.json(
       {
         status: "error",

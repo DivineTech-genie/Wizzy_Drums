@@ -15,7 +15,6 @@ export async function POST(req: NextRequest) {
       { status: 201 },
     );
   } catch (error: any) {
-    console.error("❌ Events POST Error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },
@@ -34,7 +33,6 @@ export async function GET() {
       { status: 200 },
     );
   } catch (error: any) {
-    console.error("❌ Events GET Error:", error);
     return NextResponse.json(
       { success: false, error: error.message },
       { status: 500 },

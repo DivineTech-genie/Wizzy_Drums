@@ -5,7 +5,6 @@ import { verifyAuth } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   try {
-
     const auth = await verifyAuth(req);
     if (!auth) {
       return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
@@ -43,8 +42,7 @@ export async function GET(req: NextRequest) {
       status: "success",
       data: grouped,
     });
-  } catch (error) {
-    console.error("Error fetching calendar data:", error);
+  } catch {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 },

@@ -18,6 +18,7 @@ import {
   ChevronLeft,
   ChevronRight,
   Calendar as CalendarIcon,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -157,7 +158,7 @@ export function BoldCalendar({
                 {/* Selected indicator */}
                 {isSelected && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary-foreground/20 text-[8px] flex items-center justify-center">
-                    ✓
+                    <Check className="h-2.5 w-2.5" />
                   </span>
                 )}
                 {/* Today dot */}

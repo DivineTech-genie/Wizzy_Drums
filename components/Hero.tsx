@@ -107,8 +107,8 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen md:py-12 flex items-center overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(114,113,253,0.18),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(38,198,218,0.14),transparent_28%)]" />
-      <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background/95 to-transparent" />
+      {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(114,113,253,0.18),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(38,198,218,0.14),transparent_28%)]" /> */}
+      {/* <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background/95 to-transparent" /> */}
       <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-12 h-64 w-64 rounded-full bg-secondary/15 blur-3xl" />
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -163,10 +163,8 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="heading-xl text-balance mb-6"
             >
-              Turning every event into a
-              <span className="text-primary block">
-                memorable live experience
-              </span>
+              Live drumming that turns
+              <span className="text-primary block">events into memories</span>
             </motion.h1>
 
             <motion.p
@@ -175,9 +173,9 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="text-lg text-muted-foreground max-w-xl leading-8 mb-8"
             >
-              From weddings and corporate launches to festivals and private
-              celebrations we bring world-class performances, seamless
-              logistics, and unforgettable production value.
+              Professional live drumming for weddings, corporate events, and
+              perfomances across the world built to move the room, not just fill
+              it.
             </motion.p>
 
             <motion.div

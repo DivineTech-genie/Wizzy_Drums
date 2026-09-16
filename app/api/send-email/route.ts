@@ -26,8 +26,6 @@ export async function POST(request: Request) {
       subject = "Booking Confirmation ";
     } else if (status === "cancelled") {
       subject = "Booking Cancelled ";
-    } else if (status === "pending") {
-      subject = "Booking Confirmation Pending ";
     }
 
     const { data, error } = await resend.emails.send({
