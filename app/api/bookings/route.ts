@@ -6,7 +6,6 @@ import { BookingConfirmation } from "@/components/emails/BookingConfirmation";
 import AdminEmail from "@/components/emails/AdminEmail";
 import { NextResponse, NextRequest } from "next/server";
 import { Resend } from "resend";
-import { formatDate } from "@/lib/dates";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -84,14 +83,16 @@ export async function POST(req: NextRequest) {
       eventDate: targetDate,
     });
 
-    const shortDate = formatDate(new Date(newBooking.eventDate));
+    const shortDate = new Date(newBooking.eventDate).toLocaleDateString(
+      "en-GB",
+    );
 
     await Promise.allSettled([
       // 1. Client confirmation email
       resend.emails.send({
         from: "Wizzy Drums <onboarding@resend.dev>",
         to: [newBooking.clientEmail],
-        subject: `Booking Request Received`,
+        subject: `Booking Request Received — ${shortDate}`,
         react: BookingConfirmation({
           clientName: newBooking.clientName,
           eventType: newBooking.eventType,
@@ -101,15 +102,6 @@ export async function POST(req: NextRequest) {
           status: "pending",
         }),
       }),
-
-      // 2. Admin notification email
-      resend.emails.send({
-        from: "Wizzy Drums <onboarding@resend.dev>",
-        to: [process.env.ADMIN_EMAIL!],
-        subject: `📅 New Booking: ${newBooking.clientName} — ${newBooking.eventType}`,
-        react: AdminEmail({ booking: newBooking }),
-      }),
-
       // 3. In-app notification (direct DB write — no auth needed)
       Notification.create({
         userId: "admin",
@@ -123,7 +115,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         status: "success",
-        message: "Date booked successfully",
+        message: "Booking request submitted successfully",
         data: newBooking,
       },
       { status: 201 },

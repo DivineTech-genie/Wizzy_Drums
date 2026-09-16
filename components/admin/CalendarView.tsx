@@ -14,7 +14,6 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { StatusBadge } from "./StatusBadge";
-import { formatDate } from "@/lib/dates";
 
 interface Booking {
   _id: string;
@@ -37,14 +36,14 @@ export function CalendarView({ bookings }: CalendarViewProps) {
   const days = eachDayOfInterval({ start: monthStart, end: monthEnd });
 
   const bookingsByDate = bookings.reduce((acc: any, booking) => {
-    const dateKey = formatDate(new Date(booking.eventDate));
+    const dateKey = format(new Date(booking.eventDate), "yyyy-MM-dd");
     if (!acc[dateKey]) acc[dateKey] = [];
     acc[dateKey].push(booking);
     return acc;
   }, {});
 
   const selectedDateBookings = selectedDate
-    ? bookingsByDate[formatDate(selectedDate)] || []
+    ? bookingsByDate[format(selectedDate, "yyyy-MM-dd")] || []
     : [];
 
   return (
@@ -98,7 +97,7 @@ export function CalendarView({ bookings }: CalendarViewProps) {
             </div>
           ))}
           {days.map((day) => {
-            const dateKey = formatDate(day);
+            const dateKey = format(day, "yyyy-MM-dd");
             const hasBookings = bookingsByDate[dateKey]?.length > 0;
             const isSelected = selectedDate && isSameDay(day, selectedDate);
             const isToday = isSameDay(day, new Date());

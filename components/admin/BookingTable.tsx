@@ -27,7 +27,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 import { StatusBadge } from "./StatusBadge";
-import { formatDate } from "@/lib/dates";
 
 interface Booking {
   _id: string;
@@ -125,7 +124,7 @@ export function BookingsTable({
                   </div>
                 </TableCell>
                 <TableCell>
-                  {formatDate(new Date(booking.eventDate))}
+                  {format(new Date(booking.eventDate), "dd MMM yyyy")}
                 </TableCell>
                 <TableCell>
                   <div>

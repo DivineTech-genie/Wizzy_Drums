@@ -18,7 +18,6 @@ import { BookingSuccessModal } from "./BookingSuccessModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check, PartyPopper } from "lucide-react";
-import { formatDate } from "@/lib/dates";
 
 const ExtendedBookingSchema = BookingFormSchema;
 
@@ -157,7 +156,7 @@ export function MainBooking() {
   };
 
   const handleDateSelect = (date: Date) => {
-    form.setValue("eventDate", formatDate(date));
+    form.setValue("eventDate", date.toISOString().split("T")[0]);
   };
 
   const handleSubmit = async () => {

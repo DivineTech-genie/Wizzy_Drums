@@ -174,8 +174,8 @@ const Hero = () => {
               className="text-lg text-muted-foreground max-w-xl leading-8 mb-8"
             >
               Professional live drumming for weddings, corporate events, and
-              perfomances across the world built to move the room, not just fill
-              it.
+              performances across the world built to move the room, not just
+              fill it.
             </motion.p>
 
             <motion.div
