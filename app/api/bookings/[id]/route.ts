@@ -11,6 +11,37 @@ const updateStatusSchema = z.object({
   }),
 });
 
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const booking = await Booking.findById(id);
+
+    if (!booking) {
+      return NextResponse.json(
+        { status: "error", message: "Booking not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(
+      { status: "success", data: booking },
+      { status: 200 },
+    );
+  } catch (error: any) {
+    return NextResponse.json(
+      {
+        status: "error",
+        message: error?.message || "Failed to fetch booking",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },

@@ -94,6 +94,7 @@ export async function POST(req: NextRequest) {
         to: [newBooking.clientEmail],
         subject: `Booking Request Received — ${shortDate}`,
         react: BookingConfirmation({
+          bookingId: String(newBooking._id),
           clientName: newBooking.clientName,
           eventType: newBooking.eventType,
           eventDate: shortDate,
@@ -102,6 +103,15 @@ export async function POST(req: NextRequest) {
           status: "pending",
         }),
       }),
+
+      // 2. Admin notification email
+      resend.emails.send({
+        from: "Wizzy Drums <onboarding@resend.dev>",
+        to: [process.env.ADMIN_EMAIL!],
+        subject: `📅 New Booking: ${newBooking.clientName} — ${newBooking.eventType}`,
+        react: AdminEmail({ booking: newBooking }),
+      }),
+
       // 3. In-app notification (direct DB write — no auth needed)
       Notification.create({
         userId: "admin",

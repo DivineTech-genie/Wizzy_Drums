@@ -12,6 +12,7 @@ import {
 } from "@react-email/components";
 
 interface BookingConfirmationProps {
+  bookingId?: string;
   clientName: string;
   eventType: string;
   eventDate: string;
@@ -22,6 +23,7 @@ interface BookingConfirmationProps {
 }
 
 export const BookingConfirmation = ({
+  bookingId,
   clientName,
   eventType,
   eventDate,
@@ -204,7 +206,11 @@ export const BookingConfirmation = ({
             {/* CTA Button */}
             <Section style={buttonSection}>
               <a
-                href={`${process.env.NEXT_PUBLIC_APP_URL}/book/success`}
+                href={
+                  bookingId
+                    ? `${process.env.NEXT_PUBLIC_APP_URL}/book/${bookingId}`
+                    : `${process.env.NEXT_PUBLIC_APP_URL}/book/success`
+                }
                 style={{
                   ...button,
                   backgroundColor: content.buttonColor,
