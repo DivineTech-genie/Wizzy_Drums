@@ -14,6 +14,7 @@ import { useBookings } from "@/hooks/admin/useBooking";
 import { useStats } from "@/hooks/admin/useState";
 import { toast } from "sonner";
 
+/** Renders the administrative booking dashboard and status actions. */
 export default function AdminDashboard() {
   const router = useRouter();
   const [search, setSearch] = useState("");

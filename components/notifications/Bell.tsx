@@ -24,6 +24,7 @@ interface Notification {
   createdAt: string;
 }
 
+/** Displays administrative notifications and manages their read state. */
 export function NotificationBell() {
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);

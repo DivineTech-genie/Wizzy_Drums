@@ -20,6 +20,7 @@ interface Step2LogisticsProps {
   form: UseFormReturn<BookingFormValues>;
 }
 
+/** Collects travel logistics and uploads supporting booking documents. */
 export function Step2Logistics({ form }: Step2LogisticsProps) {
   const [uploadingFlight, setUploadingFlight] = useState(false);
   const [uploadingHotel, setUploadingHotel] = useState(false);

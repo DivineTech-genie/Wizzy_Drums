@@ -24,6 +24,7 @@ export async function GET() {
   }
 }
 
+/** Creates a media item and maintains the single-hero constraint. */
 export async function POST(request: NextRequest) {
   try {
     const auth = await verifyAuth(request);
