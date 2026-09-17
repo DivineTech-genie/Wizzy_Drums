@@ -11,6 +11,15 @@ const updateStatusSchema = z.object({
   }),
 });
 
+function isDuplicateKeyError(error: unknown): error is { code: number } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === 11000
+  );
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -18,7 +27,9 @@ export async function GET(
   try {
     await connectDB();
     const { id } = await params;
-    const booking = await Booking.findById(id);
+    const booking = await Booking.findById(id)
+      .select("_id eventDate eventType status createdAt")
+      .lean();
 
     if (!booking) {
       return NextResponse.json(
@@ -31,11 +42,12 @@ export async function GET(
       { status: "success", data: booking },
       { status: 200 },
     );
-  } catch (error: any) {
+  } catch (error) {
+    console.error("GET /api/bookings/[id] error:", error);
     return NextResponse.json(
       {
         status: "error",
-        message: error?.message || "Failed to fetch booking",
+        message: "Failed to fetch booking",
       },
       { status: 500 },
     );
@@ -85,11 +97,24 @@ export async function PATCH(
       { status: 200 }, // ✅ Real HTTP status
     );
   } catch (error) {
+    console.error("PATCH /api/bookings/[id] error:", error);
+
+    if (isDuplicateKeyError(error)) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message:
+            "Sorry! This date is already booked. Please choose another date.",
+        },
+        { status: 409 },
+      );
+    }
+
     return NextResponse.json(
       {
         status: "error",
         message: "Update failed.",
-        error: error instanceof Error ? error.message : String(error),
+        error: "Failed to update booking",
       },
       { status: 500 }, // ✅ Real HTTP status
     );
@@ -131,9 +156,14 @@ export async function DELETE(
       { status: "success", message: "Booking successfully deleted" },
       { status: 200 },
     );
-  } catch (error: any) {
+  } catch (error) {
+    console.error("DELETE /api/bookings/[id] error:", error);
     return NextResponse.json(
-      { status: "error", message: "Deletion failed", error: error.message },
+      {
+        status: "error",
+        message: "Deletion failed",
+        error: "Failed to delete booking",
+      },
       { status: 500 },
     );
   }

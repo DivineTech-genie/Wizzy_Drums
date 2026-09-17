@@ -51,6 +51,7 @@ export default function BookingDetailsPage() {
   const [booking, setBooking] = useState<BookingDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [updateError, setUpdateError] = useState<string | null>(null);
   const [adminNote, setAdminNote] = useState("");
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -84,6 +85,7 @@ export default function BookingDetailsPage() {
   const handleStatusUpdate = async (status: "confirmed" | "cancelled") => {
     if (!booking || isUpdating) return;
 
+    setUpdateError(null);
     setIsUpdating(true);
 
     try {
@@ -105,7 +107,9 @@ export default function BookingDetailsPage() {
       setBooking(data.data);
       setAdminNote(data.data?.adminNote || "");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update booking");
+      setUpdateError(
+        err instanceof Error ? err.message : "Failed to update booking",
+      );
     } finally {
       setIsUpdating(false);
     }
@@ -308,6 +312,14 @@ export default function BookingDetailsPage() {
           <div className="rounded-xl border bg-card p-5 shadow-sm">
             <h2 className="mb-3 text-lg font-semibold">Update booking</h2>
             <div className="space-y-3">
+              {updateError && (
+                <p
+                  role="alert"
+                  className="rounded-md border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive"
+                >
+                  {updateError}
+                </p>
+              )}
               <Textarea
                 value={adminNote}
                 onChange={(e) => setAdminNote(e.target.value)}

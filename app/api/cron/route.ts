@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/app/backend/config/db";
 import Booking from "@/app/backend/models/booking.model";
 import Notification from "@/app/backend/models/notification";
@@ -6,17 +6,29 @@ import { Resend } from "resend";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  const cronSecret = process.env.CRON_SECRET;
+  const authorization = req.headers.get("authorization");
+
+  if (!cronSecret || authorization !== `Bearer ${cronSecret}`) {
+    return NextResponse.json(
+      { success: false, error: "Unauthorized" },
+      { status: 401 },
+    );
+  }
+
   try {
     await connectDB();
 
     const now = new Date();
+    const startOfTodayUtc = new Date(now);
+    startOfTodayUtc.setUTCHours(0, 0, 0, 0);
     const sevenDaysFromNow = new Date(now);
-    sevenDaysFromNow.setDate(now.getDate() + 7);
+    sevenDaysFromNow.setUTCDate(now.getUTCDate() + 7);
 
     // Find upcoming confirmed bookings in the next 7 days
     const upcomingBookings = await Booking.find({
-      eventDate: { $gte: now, $lte: sevenDaysFromNow },
+      eventDate: { $gte: startOfTodayUtc, $lte: sevenDaysFromNow },
       status: "confirmed",
     });
 
@@ -43,12 +55,16 @@ export async function GET() {
           link: `/admin/bookings/${booking._id}`,
         },
         {
-          userId: "admin",
-          title: `Upcoming: ${booking.clientName}`,
-          message: `${booking.eventType} at ${booking.eventLocation} on ${shortDate}`,
-          type: "reminder",
-          link: `/admin/bookings/${booking._id}`,
-          read: false,
+          $set: {
+            title: `Upcoming: ${booking.clientName}`,
+            message: `${booking.eventType} at ${booking.eventLocation} on ${shortDate}`,
+          },
+          $setOnInsert: {
+            userId: "admin",
+            type: "reminder",
+            link: `/admin/bookings/${booking._id}`,
+            read: false,
+          },
         },
         { upsert: true, new: true },
       );
@@ -107,7 +123,7 @@ export async function GET() {
   } catch (error) {
     console.error("Cron reminders error:", error);
     return NextResponse.json(
-      { success: false, error: String(error) },
+      { success: false, error: "Failed to process reminders" },
       { status: 500 },
     );
   }

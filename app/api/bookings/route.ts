@@ -26,12 +26,13 @@ export async function GET() {
       },
       { status: 200 },
     );
-  } catch (error: any) {
+  } catch (error) {
+    console.error("GET /api/bookings error:", error);
     return NextResponse.json(
       {
         status: "error",
         message: "Failed to fetch bookings",
-        error: error.message,
+        error: "Unable to load bookings",
       },
       { status: 500 },
     );
@@ -87,7 +88,7 @@ export async function POST(req: NextRequest) {
       "en-GB",
     );
 
-    await Promise.allSettled([
+    const notificationResults = await Promise.allSettled([
       // 1. Client confirmation email
       resend.emails.send({
         from: "Wizzy Drums <onboarding@resend.dev>",
@@ -121,6 +122,21 @@ export async function POST(req: NextRequest) {
         link: `/admin/bookings/${newBooking._id}`,
       }),
     ]);
+
+    const notificationOperations = [
+      "client confirmation email",
+      "admin notification email",
+      "in-app notification",
+    ];
+
+    notificationResults.forEach((result, index) => {
+      if (result.status === "rejected") {
+        console.error(
+          `Failed to send ${notificationOperations[index]} for booking ${newBooking._id}:`,
+          result.reason,
+        );
+      }
+    });
 
     return NextResponse.json(
       {
