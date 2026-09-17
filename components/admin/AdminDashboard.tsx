@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { CalendarView } from "./CalendarView";
@@ -15,6 +16,7 @@ import { toast } from "sonner";
 
 /** Renders the administrative booking dashboard and status actions. */
 export default function AdminDashboard() {
+  const router = useRouter();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -79,8 +81,7 @@ export default function AdminDashboard() {
               ? "Booking confirmed and email sent"
               : "Booking cancelled",
           );
-        } catch (emailError) {
-          console.error("Failed to send status email:", emailError);
+        } catch {
           toast.error("Booking updated, but the email notification failed");
         }
       } else {
@@ -89,8 +90,7 @@ export default function AdminDashboard() {
 
       refetch();
       return true;
-    } catch (error) {
-      console.error("Failed to update status:", error);
+    } catch {
       toast.error("An error occurred while updating the booking status");
       return false;
     }
@@ -107,8 +107,6 @@ export default function AdminDashboard() {
       // Check if response is ok
       if (!response.ok) {
         const errorData = await response.json();
-        console.error("Delete failed:", errorData);
-        // Show error to user
         toast.error(errorData.message || "Failed to delete booking");
         return;
       }
@@ -116,8 +114,7 @@ export default function AdminDashboard() {
       // Success
       toast.success("Booking deleted successfully");
       refetch(); // Refresh the list
-    } catch (error) {
-      console.error("Failed to delete booking:", error);
+    } catch {
       toast.error("An error occurred while deleting");
     }
   };

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import {
   LayoutDashboard,
@@ -40,13 +41,21 @@ const navItems = [
 export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [logoutError, setLogoutError] = useState<string | null>(null);
 
   const handleLogout = async () => {
+    setLogoutError(null);
+
     try {
-      await fetch("/api/auth/logout", { method: "POST" });
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+
+      if (!response.ok) {
+        throw new Error("Logout request failed");
+      }
+
       router.push("/login");
-    } catch (error) {
-      console.error("Logout failed:", error);
+    } catch {
+      setLogoutError("Unable to log out. Please try again.");
     }
   };
   return (
@@ -139,6 +148,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             <LogOut className="h-5 w-5 shrink-0" />
             {isOpen && <span>Logout</span>}
           </button>
+          {isOpen && logoutError && (
+            <p className="mt-2 px-3 text-xs text-destructive" role="alert">
+              {logoutError}
+            </p>
+          )}
         </div>
       </aside>
     </>

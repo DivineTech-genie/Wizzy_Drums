@@ -48,8 +48,7 @@ export async function POST(req: NextRequest) {
       status: "success",
       message: `Created ${upcomingBookings.length} reminders`,
     });
-  } catch (error) {
-    console.error("Reminder error:", error);
+  } catch {
     return NextResponse.json(
       { status: "error", message: "Failed to create reminders" },
       { status: 500 },

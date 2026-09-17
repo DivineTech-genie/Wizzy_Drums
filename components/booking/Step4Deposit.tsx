@@ -1,7 +1,7 @@
 "use client";
 
 import { UseFormReturn, useWatch } from "react-hook-form";
-import { Check, Plane } from "lucide-react";
+import { Check, Plane, CheckCircle2 } from "lucide-react";
 import { toast } from "sonner";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -53,7 +53,6 @@ export function Step4Deposit({ form }: Step4DepositProps) {
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to upload receipt.";
-      console.error("Receipt upload error", err);
       toast.error(message);
     } finally {
       setUploadingReceipt(false);
@@ -75,8 +74,7 @@ export function Step4Deposit({ form }: Step4DepositProps) {
           setBankDetails(d.data.bankDetails);
         }
       })
-      .catch((error) => {
-        console.error("Failed to load bank details:", error);
+      .catch(() => {
         toast.error("Unable to load bank details right now");
       });
   }, []);
@@ -209,7 +207,10 @@ export function Step4Deposit({ form }: Step4DepositProps) {
           <p className="text-xs text-primary mt-2">Uploading...</p>
         )}
         {form.watch("depositReceiptUrl") && (
-          <p className="mt-1 text-xs text-green-600">✅ Receipt uploaded</p>
+          <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
+            <CheckCircle2 className="h-3.5 w-3.5" />
+            Receipt uploaded
+          </p>
         )}
         {receiptError && (
           <p className="mt-2 text-sm text-destructive">{receiptError}</p>

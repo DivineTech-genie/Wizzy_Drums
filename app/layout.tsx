@@ -1,14 +1,13 @@
-import type { Metadata } from "next";
 import { Toaster } from "@/components/ui/sonner";
+import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Book Your Performance | Professional Drummer Booking",
+  title: "Wizzy Drums | Professional Live Drumming for Events",
   description:
-    "Book professional performances for weddings, corporate events, festivals, and nightclubs. Get a quote today!",
+    "Book live drumming for weddings, corporate galas, and festivals across Nigeria. Check availability and lock your date today.",
 };
 
-/** Provides the application shell and global toast notification host. */
 export default function RootLayout({
   children,
 }: Readonly<{

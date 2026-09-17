@@ -35,7 +35,7 @@ export function useBookingPricing(
     return events.find((ev) => ev.value === eventType);
   }, [events, eventType]);
 
-  // 👇 Check if event is in Eastern Nigeria
+  // Check if event is in Eastern Nigeria
   const isEastern = useMemo(() => {
     return isEasternNigeriaState(eventState);
   }, [eventState]);
@@ -73,14 +73,14 @@ export function useBookingPricing(
   const depositRate = getDepositRate(eventType);
   const depositAmount = getDepositAmount(eventType);
 
-  // 🔥 Calculate total deposit with proper conditions
+  // Calculate total deposit with proper conditions
   const totalDeposit = getTotalDeposit(
     eventType,
     cannotAffordFlight,
     eventState,
   );
 
-  // 🔥 Only show flight deposit amount if it's actually being charged
+  // Only show flight deposit amount if it's actually being charged
   const flightDepositAmount =
     !isEastern && cannotAffordFlight ? FLIGHT_DEPOSIT_AMOUNT : 0;
 

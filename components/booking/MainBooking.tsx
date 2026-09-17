@@ -14,10 +14,10 @@ import { Step2Logistics } from "./Step2-Logistics";
 import { Step3ClientInfo } from "./Step3-ClientInfo";
 import { Step4Deposit } from "./Step4Deposit";
 import { Step4Review } from "./Step4-Review";
-import { BookingSuccessModal } from "./BookingSuccessModal"; // ✅ import
+import { BookingSuccessModal } from "./BookingSuccessModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, PartyPopper } from "lucide-react";
 
 const ExtendedBookingSchema = BookingFormSchema;
 
@@ -45,7 +45,7 @@ export function MainBooking() {
   const [isLoading, setIsLoading] = useState(false);
   const [bookedDates, setBookedDates] = useState<Date[]>(mockBookedDates);
 
-  // ✅ Success modal state
+  // Success modal state
   const [showSuccess, setShowSuccess] = useState(false);
   const [submittedBooking, setSubmittedBooking] =
     useState<SubmittedBooking | null>(null);
@@ -97,9 +97,7 @@ export function MainBooking() {
             setBookedDates(dates);
           }
         }
-      } catch (error) {
-        console.error("Failed to fetch booked dates:", error);
-      }
+      } catch {}
     };
     fetchBookedDates();
   }, []);
@@ -111,7 +109,6 @@ export function MainBooking() {
     );
 
     if (!isValid) {
-      console.log("Form is invalid");
       return;
     }
 
@@ -175,7 +172,6 @@ export function MainBooking() {
       const result = await response.json();
 
       if (!response.ok) {
-        console.error("Booking API error response:", result);
         const message =
           (result as any)?.error ||
           (result as any)?.message ||
@@ -195,15 +191,16 @@ export function MainBooking() {
         eventState: data.eventState,
       });
 
-      // ✅ Open the success modal
+      // Open the success modal
       setShowSuccess(true);
 
-      toast.success("Booking submitted successfully! 🎉");
+      toast.success("Booking submitted successfully!", {
+        icon: <PartyPopper className="h-4 w-4" />,
+      });
 
       form.reset();
       setCurrentStep(1);
     } catch (error) {
-      console.error("Submission error:", error);
       const message =
         error instanceof Error
           ? error.message
@@ -307,7 +304,7 @@ export function MainBooking() {
         </div>
       )}
 
-      {/* ✅ Success Modal */}
+      {/* Success Modal */}
       <BookingSuccessModal
         open={showSuccess}
         onOpenChange={(open) => {

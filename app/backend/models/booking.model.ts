@@ -73,6 +73,14 @@ bookingSchema.pre("validate", function () {
   }
 });
 
+bookingSchema.index(
+  { eventDate: 1 },
+  {
+    unique: true,
+    partialFilterExpression: { status: "confirmed" },
+  },
+);
+
 const Booking = models.Booking || model<IBooking>("Booking", bookingSchema);
 
 export default Booking;

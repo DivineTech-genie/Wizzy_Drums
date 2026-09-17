@@ -10,6 +10,50 @@ const updateStatusSchema = z.object({
     message: "Status must be 'pending', 'confirmed', or 'cancelled'",
   }),
 });
+
+function isDuplicateKeyError(error: unknown): error is { code: number } {
+  return (
+    typeof error === "object" &&
+    error !== null &&
+    "code" in error &&
+    error.code === 11000
+  );
+}
+
+export async function GET(
+  _req: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  try {
+    await connectDB();
+    const { id } = await params;
+    const booking = await Booking.findById(id)
+      .select("_id eventDate eventType status createdAt")
+      .lean();
+
+    if (!booking) {
+      return NextResponse.json(
+        { status: "error", message: "Booking not found" },
+        { status: 404 },
+      );
+    }
+
+    return NextResponse.json(
+      { status: "success", data: booking },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error("GET /api/bookings/[id] error:", error);
+    return NextResponse.json(
+      {
+        status: "error",
+        message: "Failed to fetch booking",
+      },
+      { status: 500 },
+    );
+  }
+}
+
 export async function PATCH(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> },
@@ -21,17 +65,18 @@ export async function PATCH(
     }
 
     await connectDB();
-
     const { id } = await params;
     const rawData = await req.json();
     const validationResult = updateStatusSchema.safeParse(rawData);
 
     if (!validationResult.success) {
-      return NextResponse.json({
-        status: "error",
-        errors: validationResult.error.flatten().fieldErrors,
-        statusCode: 400,
-      });
+      return NextResponse.json(
+        {
+          status: "error",
+          errors: validationResult.error.flatten().fieldErrors,
+        },
+        { status: 400 }, // ✅ Real HTTP status
+      );
     }
 
     const updatedBooking = await Booking.findByIdAndUpdate(
@@ -39,26 +84,40 @@ export async function PATCH(
       { status: validationResult.data.status },
       { new: true, runValidators: true },
     );
+
     if (!updatedBooking) {
-      return NextResponse.json({
-        status: "error",
-        message: "No booking found with that ID",
-        statusCode: 404,
-      });
+      return NextResponse.json(
+        { status: "error", message: "No booking found with that ID" },
+        { status: 404 }, // ✅ Real HTTP status
+      );
     }
 
-    return NextResponse.json({
-      status: "success",
-      data: updatedBooking,
-      statusCode: 200,
-    });
+    return NextResponse.json(
+      { status: "success", data: updatedBooking },
+      { status: 200 }, // ✅ Real HTTP status
+    );
   } catch (error) {
-    return NextResponse.json({
-      status: "error",
-      message: "Update failed.",
-      error: error instanceof Error ? error.message : String(error),
-      statusCode: 500,
-    });
+    console.error("PATCH /api/bookings/[id] error:", error);
+
+    if (isDuplicateKeyError(error)) {
+      return NextResponse.json(
+        {
+          status: "error",
+          message:
+            "Sorry! This date is already booked. Please choose another date.",
+        },
+        { status: 409 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        status: "error",
+        message: "Update failed.",
+        error: "Failed to update booking",
+      },
+      { status: 500 }, // ✅ Real HTTP status
+    );
   }
 }
 
@@ -74,7 +133,6 @@ export async function DELETE(
     }
 
     await connectDB();
-
     const { id } = await params;
 
     const existingBooking = await Booking.findById(id);
@@ -85,28 +143,27 @@ export async function DELETE(
       );
     }
 
+    // Clean up Cloudinary files
     await Promise.all([
       deleteCloudinaryFile(existingBooking.flightTicketUrl),
       deleteCloudinaryFile(existingBooking.hotelTicketUrl),
       deleteCloudinaryFile(existingBooking.depositReceiptUrl),
     ]);
 
-    const deletedBooking = await Booking.findByIdAndDelete(id);
-
-    if (!deletedBooking) {
-      return NextResponse.json(
-        { status: "error", message: "No booking found with that ID to delete" },
-        { status: 404 },
-      );
-    }
+    await Booking.findByIdAndDelete(id);
 
     return NextResponse.json(
       { status: "success", message: "Booking successfully deleted" },
       { status: 200 },
     );
-  } catch (error: any) {
+  } catch (error) {
+    console.error("DELETE /api/bookings/[id] error:", error);
     return NextResponse.json(
-      { status: "error", message: "Deletion failed", error: error.message },
+      {
+        status: "error",
+        message: "Deletion failed",
+        error: "Failed to delete booking",
+      },
       { status: 500 },
     );
   }

@@ -66,11 +66,25 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
         },
         {
           label: "Flight Ticket",
-          value: data.flightTicketUrl ? "Uploaded ✓" : "Not uploaded",
+          value: data.flightTicketUrl ? (
+            <span className="inline-flex items-center gap-1">
+              <Check className="h-3.5 w-3.5" />
+              Uploaded
+            </span>
+          ) : (
+            "Not uploaded"
+          ),
         },
         {
           label: "Hotel Confirmation",
-          value: data.hotelTicketUrl ? "Uploaded ✓" : "Not uploaded",
+          value: data.hotelTicketUrl ? (
+            <span className="inline-flex items-center gap-1">
+              <Check className="h-3.5 w-3.5" />
+              Uploaded
+            </span>
+          ) : (
+            "Not uploaded"
+          ),
         },
       ],
     },

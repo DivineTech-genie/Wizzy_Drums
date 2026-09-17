@@ -45,8 +45,7 @@ export async function GET(req: NextRequest) {
         growth: Math.round(growth * 10) / 10,
       },
     });
-  } catch (error) {
-    console.error("Stats error:", error);
+  } catch {
     return NextResponse.json(
       { message: "Internal server error" },
       { status: 500 },
