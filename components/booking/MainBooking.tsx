@@ -18,6 +18,7 @@ import { BookingSuccessModal } from "./BookingSuccessModal";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { ArrowLeft, ArrowRight, Check, PartyPopper } from "lucide-react";
+import { isOutsideEast } from "@/lib/eastern-states";
 
 const ExtendedBookingSchema = BookingFormSchema;
 
@@ -103,14 +104,44 @@ export function MainBooking() {
   }, []);
 
   const nextStep = async () => {
+    if (currentStep === 2) {
+      const state = form.getValues("eventState") || "";
+      const country = form.getValues("eventCountry") || "";
+      const providesFlight = form.getValues("providesFlight");
+      const cannotAffordFlight = form.getValues("cannotAffordFlight");
+      const requiresAccommodation = form.getValues("requiresAccommodation");
+
+      const outsideEast = isOutsideEast(state, country);
+
+      if (outsideEast) {
+        const flightSatisfied = !!providesFlight || !!cannotAffordFlight;
+        const accommodationSatisfied = !!requiresAccommodation;
+
+        if (!flightSatisfied && !accommodationSatisfied) {
+          toast.error(
+            "Please provide both flight and accommodation details to continue.",
+          );
+          return;
+        }
+        if (!flightSatisfied) {
+          toast.error(
+            "Please provide your flight details or select 'Charge flights to quote' to continue.",
+          );
+          return;
+        }
+        if (!accommodationSatisfied) {
+          toast.error("Please provide accommodation details to continue.");
+          return;
+        }
+      }
+    }
+
     const fields = getStepFields(currentStep);
     const isValid = await form.trigger(
       fields as Array<keyof z.infer<typeof ExtendedBookingSchema>>,
     );
 
-    if (!isValid) {
-      return;
-    }
+    if (!isValid) return;
 
     if (currentStep < totalSteps) {
       setCurrentStep(currentStep + 1);

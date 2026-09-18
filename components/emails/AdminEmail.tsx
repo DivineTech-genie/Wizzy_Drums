@@ -10,6 +10,7 @@ import {
   Column,
   Button,
   Link,
+  Img,
 } from "@react-email/components";
 
 interface AdminEmailProps {
@@ -55,56 +56,29 @@ export const AdminEmail = ({ booking, adminUrl }: AdminEmailProps) => {
         <Container style={container}>
           {/* Header */}
           <Section style={header}>
-            <div style={logoBadge}>
-              <div
-                style={{ textAlign: "center" as const, marginBottom: "12px" }}
-              >
-                <Text style={logoText}>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="36"
-                    height="36"
-                    viewBox="0 0 24 24"
-                    fill="currentColor"
-                    style={{ display: "inline-block", verticalAlign: "middle" }}
-                  >
-                    {/* Top rim */}
-                    <ellipse cx="12" cy="7" rx="9" ry="2.5" opacity="0.9" />
-                    {/* Body */}
-                    <path d="M3 7v8c0 1.4 4 2.5 9 2.5s9-1.1 9-2.5V7c0 1.4-4 2.5-9 2.5S3 8.4 3 7z" />
-                    {/* Crossed sticks */}
-                    <rect
-                      x="6"
-                      y="1"
-                      width="1.2"
-                      height="8"
-                      rx="0.6"
-                      transform="rotate(35 6.6 5)"
-                      opacity="0.85"
-                    />
-                    <rect
-                      x="16.8"
-                      y="1"
-                      width="1.2"
-                      height="8"
-                      rx="0.6"
-                      transform="rotate(-35 17.4 5)"
-                      opacity="0.85"
-                    />
-                  </svg>
-                </Text>
-              </div>
-            </div>
+            <Img
+              src={`${process.env.NEXT_PUBLIC_APP_URL}/images/drum-logo.jpg`}
+              alt="Wizzy Drums"
+              width="48"
+              height="48"
+              style={{
+                margin: "0 auto 12px",
+                display: "block",
+                borderRadius: "8px",
+              }}
+            />
             <Heading style={brandName}>Wizzy Drums</Heading>
-            <Text style={brandSubtitle}>Admin Notification</Text>
+            <Text style={brandSubtitle}>
+              Professional live drumming for events that refuse to be ordinary.
+            </Text>
           </Section>
 
           {/* Alert Badge */}
           <Section style={alertSection}>
-            <Text style={alertBadge}>🔔 New Booking</Text>
+            <Text style={alertBadge}>New Booking</Text>
             <Heading style={heading}>A new booking has been submitted</Heading>
             <Text style={subheading}>
-              Review the details below and reach out to the client within 24–48
+              Review the details below and reach out to the client within 24-48
               hours.
             </Text>
           </Section>
@@ -243,7 +217,7 @@ export const AdminEmail = ({ booking, adminUrl }: AdminEmailProps) => {
               Review in Dashboard
             </Button>
             <Text style={ctaHint}>
-              Respond to the client within 24–48 hours
+              Respond to the client within 24-48 hours
             </Text>
           </Section>
 
@@ -291,24 +265,6 @@ const header = {
   backgroundColor: "#0f172a",
   padding: "32px 32px 24px",
   textAlign: "center" as const,
-};
-
-const logoBadge = {
-  display: "inline-block",
-  width: "48px",
-  height: "48px",
-  backgroundColor: "#d4a548",
-  borderRadius: "12px",
-  margin: "0 auto 12px",
-};
-
-const logoText = {
-  color: "#0f172a",
-  fontSize: "24px",
-  fontWeight: "800",
-  lineHeight: "48px",
-  textAlign: "center" as const,
-  margin: "0",
 };
 
 const brandName = {

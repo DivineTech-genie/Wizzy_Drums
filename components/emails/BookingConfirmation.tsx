@@ -82,46 +82,6 @@ export const BookingConfirmation = ({
     <Html>
       <Body style={main}>
         <Container style={container}>
-          {/* ============ HEADER ============ */}
-          {/* <Section style={header}> */}
-          {/* ✅ Drum SVG (matches admin email) */}
-          {/* <div style={{ textAlign: "center" as const, marginBottom: "12px" }}>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="44"
-                height="44"
-                viewBox="0 0 24 24"
-                fill="#d4a548"
-                style={{ display: "inline-block", verticalAlign: "middle" }}
-              >
-                <ellipse cx="12" cy="7" rx="9" ry="2.5" opacity="0.9" />
-                <path d="M3 7v8c0 1.4 4 2.5 9 2.5s9-1.1 9-2.5V7c0 1.4-4 2.5-9 2.5S3 8.4 3 7z" />
-                <rect
-                  x="6"
-                  y="1"
-                  width="1.2"
-                  height="8"
-                  rx="0.6"
-                  transform="rotate(35 6.6 5)"
-                  opacity="0.85"
-                />
-                <rect
-                  x="16.8"
-                  y="1"
-                  width="1.2"
-                  height="8"
-                  rx="0.6"
-                  transform="rotate(-35 17.4 5)"
-                  opacity="0.85"
-                />
-              </svg>
-            </div>
-
-            <Heading style={headerTitle}>Wizzy Drums</Heading>
-            <Text style={headerSubtitle}>Professional Event Entertainment</Text> */}
-          {/* </Section> */}
-
-          {/* ✅ FAVICON ALTERNATIVE — uncomment this and remove the SVG above */}
           <Section style={header}>
             <Img
               src={`${process.env.NEXT_PUBLIC_APP_URL}/images/drum-logo.jpg`}

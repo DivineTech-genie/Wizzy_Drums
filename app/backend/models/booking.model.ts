@@ -1,5 +1,5 @@
 import { Schema, model, Document, models } from "mongoose";
-import { isEasternNigeriaState } from "../../../lib/eastern-states";
+import { isOutsideEast } from "../../../lib/eastern-states";
 
 export interface IBooking extends Document {
   clientName: string;
@@ -62,12 +62,20 @@ const bookingSchema = new Schema<IBooking>(
 
 bookingSchema.pre("validate", function () {
   const doc = this as IBooking;
-  const isEastern = isEasternNigeriaState(doc.eventState || "");
-  if (!isEastern) {
+  const outsideEast = isOutsideEast(
+    doc.eventState || "",
+    doc.eventCountry || "",
+  );
+
+  if (outsideEast) {
     if (!doc.providesFlight && !doc.cannotAffordFlight) {
-      // Throwing an Error here will cause Mongoose validation to fail
       throw new Error(
-        "For events outside the eastern region, either providesFlight or cannotAffordFlight must be checked",
+        "For events outside the East, either providesFlight or cannotAffordFlight must be selected.",
+      );
+    }
+    if (!doc.requiresAccommodation) {
+      throw new Error(
+        "Accommodation for one person is required for events outside the East.",
       );
     }
   }
