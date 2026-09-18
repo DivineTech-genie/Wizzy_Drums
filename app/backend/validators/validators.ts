@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { isEasternNigeriaState } from "../../../lib/eastern-states";
+import {
+  isEasternNigeriaState,
+  isOutsideEast,
+} from "../../../lib/eastern-states";
 
 export const CreateBookingSchema = z
   .object({
@@ -28,11 +31,10 @@ export const CreateBookingSchema = z
     hotelTicketUrl: z.string().url().nullable(),
   })
   .superRefine((data, ctx) => {
-    const eventCountry = data.eventCountry.trim().toLowerCase();
-    const eventState = data.eventState.trim().toLowerCase();
-    const isEastern = isEasternNigeriaState(eventState);
-    const outsideEasternNigeria = eventCountry !== "nigeria" || !isEastern;
+    const isEastern = isEasternNigeriaState(data.eventState);
+    const outsideEast = isOutsideEast(data.eventState, data.eventCountry);
 
+    // If user provides flights, they must upload a ticket
     if (data.providesFlight && !data.flightTicketUrl?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
@@ -41,20 +43,28 @@ export const CreateBookingSchema = z
       });
     }
 
-    // Require a flight arrangement only for bookings outside Eastern Nigeria
-    if (
-      !isEastern &&
-      outsideEasternNigeria &&
-      !data.providesFlight &&
-      !data.cannotAffordFlight
-    ) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ["providesFlight"],
-        message: "Please choose a flight arrangement option.",
-      });
+    // ✅ Outside East — BOTH flight arrangement AND accommodation required
+    if (outsideEast) {
+      if (!data.providesFlight && !data.cannotAffordFlight) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["providesFlight"],
+          message:
+            "Please choose a flight arrangement option (provide flights or charge to quote).",
+        });
+      }
+
+      if (!data.requiresAccommodation) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["requiresAccommodation"],
+          message:
+            "Accommodation for one person is required for bookings outside the East.",
+        });
+      }
     }
 
+    // If accommodation confirmed, hotel doc required
     if (data.requiresAccommodation && !data.hotelTicketUrl?.trim()) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

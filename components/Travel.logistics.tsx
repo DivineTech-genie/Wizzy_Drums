@@ -1,4 +1,3 @@
-// components/booking/travel-logistics-section.tsx
 "use client";
 
 import { useEffect } from "react";
@@ -36,6 +35,7 @@ export function TravelLogisticsForm({
     if (stateValue.trim() && isLocal) {
       form.setValue("providesFlight", false, { shouldValidate: true });
       form.setValue("cannotAffordFlight", false, { shouldValidate: true });
+      form.setValue("requiresAccommodation", false, { shouldValidate: true });
     }
   }, [form, isLocal, stateValue]);
 
@@ -44,34 +44,33 @@ export function TravelLogisticsForm({
   return (
     <div className="p-4 rounded-lg bg-mauve-50 border border-primary/10 space-y-4 text-slate-900">
       {isLocal ? (
+        // ✅ New within-East copy
         <div className="space-y-1">
-          <p className="text-xs font-bold text-emerald-600 flex items-center gap-1">
-            <span>
-              {" "}
-              <Pin className="h-4 w-4" />
-            </span>{" "}
-            Local Event {`in (${stateValue})`}
+          <p className="text-sm font-bold text-emerald-600 flex items-center gap-1.5">
+            <Pin className="h-4 w-4" />
+            You&apos;re all set — this is a local event within the East.
           </p>
           <p className="text-xs text-slate-600">
-            Host must arrange local secure ground transportation.
+            No flights or accommodation are required. We&apos;re excited to be
+            part of this moment with you.
           </p>
         </div>
       ) : (
         <div className="space-y-4">
-          <div className=" text-red-900 p-3 text-xs border border-primary/10 rounded-xl bg-mauve-100">
-            <p className="flex items-center gap-2">
+          {/* ✅ Updated notice */}
+          <div className="text-red-900 p-3 text-xs border border-primary/10 rounded-xl bg-mauve-100">
+            <p className="flex items-start gap-2">
+              <TriangleAlert className="h-4 w-4 shrink-0 mt-0.5" />
               <span>
-                <TriangleAlert className="h-4 w-4" />
-              </span>{" "}
-              please note that this event is outside the east and will require a
-              two-way flight arrangement. Please select one of the flight
-              arrangement options below. If you cannot provide flights, select
-              &quot;Charge flights to quote&quot; and an additional flight
-              deposit will be included.
+                Any booking outside the East comes with a two-way flight and
+                accommodation for one. If you cannot provide flights, select
+                &quot;Charge flights to quote&quot; and an additional flight
+                deposit will be included.
+              </span>
             </p>
           </div>
 
-          <Field className="space-y-3 ">
+          <Field className="space-y-3">
             <FieldLabel className="text-xs font-bold uppercase text-slate-500">
               Flight Arrangement
             </FieldLabel>
@@ -90,9 +89,13 @@ export function TravelLogisticsForm({
                   checked={!!providesFlight}
                   onCheckedChange={(checked) => {
                     const selected = Boolean(checked);
-                    form.setValue("providesFlight", selected);
+                    form.setValue("providesFlight", selected, {
+                      shouldValidate: true,
+                    });
                     if (selected) {
-                      form.setValue("cannotAffordFlight", false);
+                      form.setValue("cannotAffordFlight", false, {
+                        shouldValidate: true,
+                      });
                     }
                   }}
                 />
@@ -118,23 +121,27 @@ export function TravelLogisticsForm({
                   checked={!!cannotAffordFlight}
                   onCheckedChange={(checked) => {
                     const selected = Boolean(checked);
-                    form.setValue("cannotAffordFlight", selected);
+                    form.setValue("cannotAffordFlight", selected, {
+                      shouldValidate: true,
+                    });
                     if (selected) {
-                      form.setValue("providesFlight", false);
+                      form.setValue("providesFlight", false, {
+                        shouldValidate: true,
+                      });
                     }
                   }}
                 />
                 <div>
                   <p className="font-medium">Charge flights to quote</p>
                   <p className="text-xs text-muted-foreground">
-                    We’ll add the flight cost to your deposit and quote.
+                    We&apos;ll add the flight cost to your deposit and quote.
                   </p>
                 </div>
               </label>
             </div>
           </Field>
 
-          {/* Accommodation Toggle (Controlled Checkbox) */}
+          {/* ✅ Accommodation — now mandatory for outside East */}
           <Controller
             control={form.control}
             name="requiresAccommodation"
@@ -156,10 +163,12 @@ export function TravelLogisticsForm({
                   }}
                 />
                 <div>
-                  <p className="font-medium">Hotel Accomodation</p>
+                  <p className="font-medium">
+                    Accommodation required (for one person)
+                  </p>
                   <p className="text-xs text-muted-foreground">
-                    Upload Hotel information below if the event requires an
-                    overnight stay.
+                    Upload hotel confirmation below. Required for any booking
+                    outside the East.
                   </p>
                 </div>
               </label>

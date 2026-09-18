@@ -12,9 +12,10 @@ import {
 import { toast } from "sonner";
 import { TravelLogisticsForm } from "../Travel.logistics";
 import { uploadFileToCloudinary } from "@/lib/upload-file";
-import { isEasternNigeriaState } from "@/lib/eastern-states";
+import { isOutsideEast } from "@/lib/eastern-states";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { useBookingPricing } from "@/hooks/useBookingPricing";
+import { cn } from "@/lib/utils";
 
 interface Step2LogisticsProps {
   form: UseFormReturn<BookingFormValues>;
@@ -32,37 +33,78 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     control: form.control,
     name: "cannotAffordFlight",
   });
-  const providesFlight = form.watch("providesFlight");
+  const providesFlight = useWatch({
+    control: form.control,
+    name: "providesFlight",
+  });
+  const requiresAccommodation = useWatch({
+    control: form.control,
+    name: "requiresAccommodation",
+  });
+  const flightTicketUrl = useWatch({
+    control: form.control,
+    name: "flightTicketUrl",
+  });
+  const hotelTicketUrl = useWatch({
+    control: form.control,
+    name: "hotelTicketUrl",
+  });
   const eventState =
     useWatch({ control: form.control, name: "eventState" }) || "";
   const eventCountry =
     useWatch({ control: form.control, name: "eventCountry" }) || "";
   const eventDate = useWatch({ control: form.control, name: "eventDate" });
 
-  // Use the pricing hook
   const {
     eventPrice,
     depositRate,
     depositAmount,
     flightDepositAmount,
     isLoading,
-  } = useBookingPricing(eventType, cannotAffordFlight);
+  } = useBookingPricing(eventType, Boolean(cannotAffordFlight));
 
-  const isEastern = isEasternNigeriaState(eventState);
+  // const isEastern = isEasternNigeriaState(eventState);
+  const outsideEast = isOutsideEast(eventState, eventCountry);
+
   const requiresFlightUpload = !!providesFlight;
-  const requiresAccommodationUpload = !!form.watch("requiresAccommodation");
   const shouldShowUploadSection =
-    requiresFlightUpload || requiresAccommodationUpload;
+    requiresFlightUpload || !!requiresAccommodation;
+
+  const validateBeforeNext = (): boolean => {
+    if (!eventState.trim()) return true;
+
+    if (!outsideEast) return true;
+
+    const flightSatisfied = !!providesFlight || !!cannotAffordFlight;
+    const accommodationSatisfied = !!requiresAccommodation;
+
+    if (!flightSatisfied && !accommodationSatisfied) {
+      toast.error(
+        "Please provide both flight and accommodation details to continue.",
+      );
+      return false;
+    }
+    if (!flightSatisfied) {
+      toast.error(
+        "Please provide your flight details or select 'Charge flights to quote' to continue.",
+      );
+      return false;
+    }
+    if (!accommodationSatisfied) {
+      toast.error("Please provide accommodation details to continue.");
+      return false;
+    }
+
+    return true;
+  };
 
   const handleFlightFileUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploadingFlight(true);
     setUploadError("");
-
     try {
       const url = await uploadFileToCloudinary(file);
       form.setValue("flightTicketUrl", url, { shouldValidate: true });
@@ -84,10 +126,8 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
     setUploadingHotel(true);
     setUploadError("");
-
     try {
       const url = await uploadFileToCloudinary(file);
       form.setValue("hotelTicketUrl", url, { shouldValidate: true });
@@ -113,7 +153,6 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
     return `${day}/${month}/${year}`;
   };
 
-  // Loading state
   if (isLoading) {
     return (
       <div className="space-y-8">
@@ -123,13 +162,17 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
           </h2>
           <p className="text-muted-foreground text-sm">Loading pricing...</p>
         </div>
-        <div className="h-40 bg-gray-200 rounded-xl animate-pulse" />
+        <div className="h-40 bg-muted rounded-xl animate-pulse" />
       </div>
     );
   }
 
+  // Visual highlight for missing fields (outside East only)
+  const flightMissing = outsideEast && !providesFlight && !cannotAffordFlight;
+  const accommodationMissing = outsideEast && !requiresAccommodation;
+
   return (
-    <div className="space-y-8 ">
+    <div className="space-y-8">
       {/* Header */}
       <div className="text-center">
         <h2 className="text-2xl font-heading font-bold">Travel & Logistics</h2>
@@ -138,7 +181,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         </p>
       </div>
 
-      {/* Dynamic Message - Shows event summary */}
+      {/* Event summary */}
       <div className="p-4 rounded-xl bg-mauve-50 border border-primary/10">
         <div className="flex flex-wrap items-center gap-4 text-sm">
           <div className="flex items-center gap-2">
@@ -170,29 +213,33 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         </div>
       </div>
 
-      {/* Logistics Section */}
+      {/* Logistics section */}
       <TravelLogisticsForm form={form} />
 
-      {/* {eventState.trim() !== "" &&
-        !isEastern &&
-        !providesFlight &&
-        !cannotAffordFlight && (
-          <div className="rounded-xl border  p-4 text-red-900">
-            <p className="text-xs flex items-center gap-2 ">
-              <span>
-                <TriangleAlert />
-              </span>
-              Please choose a flight arrangement option. If you cannot provide
-              flights, select &quot;Charge flights to quote&quot; and an
-              additional flight deposit will be included.
-            </p>
-          </div>
-        )} */}
+      {/* Missing fields warning banner (outside East only) */}
+      {outsideEast && (flightMissing || accommodationMissing) && (
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
+          <p className="flex items-center gap-2 text-sm font-medium">
+            <TriangleAlert className="h-4 w-4" />
+            Additional details required
+          </p>
+          <ul className="mt-2 ml-6 list-disc text-xs space-y-1">
+            {flightMissing && (
+              <li>
+                Select a flight arrangement (provide ticket or charge to quote)
+              </li>
+            )}
+            {accommodationMissing && (
+              <li>Confirm accommodation for one person</li>
+            )}
+          </ul>
+        </div>
+      )}
 
       {cannotAffordFlight && (
         <div className="rounded-xl bg-mauve-100 border border-primary/10 p-4 text-red-900">
           <p className="font-medium text-sm">Flight deposit included</p>
-          <p className="text-xs text-red-900 ">
+          <p className="text-xs text-red-900">
             Because you chose to charge flights to the quote, an additional
             deposit of ₦{flightDepositAmount.toLocaleString()} will be added to
             your booking deposit.
@@ -201,7 +248,17 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
       )}
 
       {shouldShowUploadSection && (
-        <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-4">
+        <div
+          className={cn(
+            "space-y-4 rounded-xl border bg-muted/20 p-4",
+            outsideEast && requiresFlightUpload && !flightTicketUrl
+              ? "border-destructive/40"
+              : "border-border/60",
+            outsideEast && requiresAccommodation && !hotelTicketUrl
+              ? "border-destructive/40"
+              : "border-border/60",
+          )}
+        >
           {uploadError ? (
             <p className="text-sm text-destructive">{uploadError}</p>
           ) : null}
@@ -221,7 +278,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
               {uploadingFlight && (
                 <p className="mt-1 text-xs text-primary">Uploading...</p>
               )}
-              {form.watch("flightTicketUrl") && (
+              {flightTicketUrl && (
                 <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Flight ticket uploaded
@@ -230,7 +287,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
             </div>
           )}
 
-          {requiresAccommodationUpload && (
+          {requiresAccommodation && (
             <div>
               <label className="mb-1 block text-sm font-medium">
                 Upload hotel confirmation
@@ -245,7 +302,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
               {uploadingHotel && (
                 <p className="mt-1 text-xs text-primary">Uploading...</p>
               )}
-              {form.watch("hotelTicketUrl") && (
+              {hotelTicketUrl && (
                 <p className="mt-1 flex items-center gap-1 text-xs text-green-600">
                   <CheckCircle2 className="h-3.5 w-3.5" />
                   Hotel confirmation uploaded
@@ -256,9 +313,14 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         </div>
       )}
 
-      {/* Summary Cards */}
+      {/* Summary cards */}
       <div className="grid md:grid-cols-2 gap-4 pt-4 border-t">
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-muted/30">
+        <div
+          className={cn(
+            "flex items-start gap-3 p-4 rounded-xl bg-muted/30",
+            flightMissing && "border border-destructive/40 bg-destructive/5",
+          )}
+        >
           <Plane className="h-5 w-5 text-primary shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium">Flight Arrangement</p>
@@ -272,14 +334,20 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-4 rounded-xl bg-muted/30">
+        <div
+          className={cn(
+            "flex items-start gap-3 p-4 rounded-xl bg-muted/30",
+            accommodationMissing &&
+              "border border-destructive/40 bg-destructive/5",
+          )}
+        >
           <Hotel className="h-5 w-5 text-primary shrink-0 mt-0.5" />
           <div>
             <p className="text-sm font-medium">Accommodation</p>
             <p className="text-xs text-muted-foreground">
-              {form.watch("requiresAccommodation")
-                ? "Overnight stay required"
-                : "Not required"}
+              {requiresAccommodation
+                ? "Required (one person)"
+                : "Not confirmed"}
             </p>
           </div>
         </div>
