@@ -251,10 +251,9 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
         <div
           className={cn(
             "space-y-4 rounded-xl border bg-muted/20 p-4",
-            outsideEast && requiresFlightUpload && !flightTicketUrl
-              ? "border-destructive/40"
-              : "border-border/60",
-            outsideEast && requiresAccommodation && !hotelTicketUrl
+            outsideEast &&
+              ((requiresFlightUpload && !flightTicketUrl) ||
+                (requiresAccommodation && !hotelTicketUrl))
               ? "border-destructive/40"
               : "border-border/60",
           )}
