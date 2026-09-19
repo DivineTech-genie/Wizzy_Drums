@@ -102,6 +102,14 @@ const Footer = () => {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/admin"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Login
+                </Link>
+              </li>
             </ul>
           </div>
           <div>

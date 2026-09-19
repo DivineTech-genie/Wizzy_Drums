@@ -14,6 +14,7 @@ import {
   Upload,
   CalendarDays,
   Image,
+  Users,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -32,6 +33,7 @@ interface SidebarProps {
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/admin" },
   { icon: CalendarDays, label: "Events", href: "/admin/events" },
+  { icon: Users, label: "Bookings", href: "/admin/bookings" },
   { icon: Image, label: "Media", href: "/admin/media" },
   { icon: CheckSquare, label: "Logistics", href: "/admin/logistics" },
   { icon: Upload, label: "Uploads", href: "/admin/uploads" },
@@ -60,6 +62,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
   };
   return (
     <>
+      {/* Mobile overlay */}
       <div
         className={cn(
           "fixed inset-0 z-40 bg-black/30 transition-opacity duration-300 md:hidden",
@@ -71,9 +74,9 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       <aside
         className={cn(
           "fixed left-0 top-0 z-50 flex h-full flex-col border-r bg-card transition-transform duration-300",
-          "w-64 md:w-auto",
-          isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          isOpen ? "md:w-64" : "md:w-20",
+          isOpen
+            ? "translate-x-0 md:w-64"
+            : "-translate-x-full md:translate-x-0 md:w-20",
         )}
       >
         {/* Logo */}
@@ -82,7 +85,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             href="/admin"
             className="flex items-center gap-2 overflow-hidden"
           >
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary shrink-0">
               <Drum className="h-4 w-4 text-primary-foreground" />
             </div>
             {isOpen && (
@@ -95,7 +98,7 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
             variant="ghost"
             size="icon"
             onClick={() => setIsOpen(!isOpen)}
-            className="h-8 w-8"
+            className="h-8 w-8 shrink-0"
           >
             {isOpen ? (
               <ChevronLeft className="h-4 w-4" />
@@ -105,8 +108,8 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           </Button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 space-y-1 overflow-y-auto px-3 py-4">
+        {/* Navigation — single column */}
+        <nav className="flex-1 flex flex-col gap-1 overflow-y-auto px-3 py-4">
           <TooltipProvider>
             {navItems.map((item) => {
               const isActive = pathname === item.href;
@@ -137,13 +140,11 @@ export function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           </TooltipProvider>
         </nav>
 
-        {/* Footer - Logout */}
+        {/* Logout */}
         <div className="border-t p-3">
           <button
             onClick={handleLogout}
-            className={cn(
-              "flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground",
-            )}
+            className="flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted-foreground transition-all hover:bg-accent hover:text-accent-foreground"
           >
             <LogOut className="h-5 w-5 shrink-0" />
             {isOpen && <span>Logout</span>}

@@ -13,6 +13,8 @@ import { BookingDetailsModal } from "./BookingDetailsModal";
 import { useBookings } from "@/hooks/admin/useBooking";
 import { useStats } from "@/hooks/admin/useState";
 import { toast } from "sonner";
+import { Button } from "../ui/button";
+import { ArrowRight } from "lucide-react";
 
 /** Renders the administrative booking dashboard and status actions. */
 export default function AdminDashboard() {
@@ -35,9 +37,13 @@ export default function AdminDashboard() {
 
   const { stats, loading: statsLoading } = useStats();
 
-  const handleViewBooking = (booking: any) => {
-    setSelectedBooking(booking);
-    setModalOpen(true);
+  // const handleViewBooking = (booking: any) => {
+  //   setSelectedBooking(booking);
+  //   setModalOpen(true);
+  // };
+
+  const handleViewBooking = (booking: { _id: string }) => {
+    router.push(`/admin/bookings/${booking._id}`);
   };
 
   const handleStatusChange = async (
@@ -140,6 +146,16 @@ export default function AdminDashboard() {
             <TabsTrigger value="calendar">Calendar</TabsTrigger>
             <TabsTrigger value="activity">Recent Activity</TabsTrigger>
           </TabsList>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => router.push("/admin/bookings")}
+            className="gap-2 self-start sm:self-auto"
+          >
+            View all bookings
+            <ArrowRight className="h-4 w-4" />
+          </Button>
         </div>
 
         <TabsContent value="bookings" className="space-y-4">

@@ -64,7 +64,7 @@ export function BookingsTable({
   loading,
 }: BookingsTableProps) {
   const [page, setPage] = useState(1);
-  const pageSize = 10;
+  const pageSize = 5;
 
   const totalPages = Math.ceil(bookings.length / pageSize);
   const paginatedBookings = bookings.slice(
@@ -199,12 +199,12 @@ export function BookingsTable({
 
       {/* Pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-sm text-muted-foreground">
             Showing {(page - 1) * pageSize + 1} -{" "}
             {Math.min(page * pageSize, bookings.length)} of {bookings.length}
           </p>
-          <div className="flex gap-1">
+          <div className="flex items-center gap-1">
             <Button
               variant="outline"
               size="icon"
@@ -213,6 +213,35 @@ export function BookingsTable({
             >
               <ChevronLeft className="h-4 w-4" />
             </Button>
+
+            {/* Numbered page buttons */}
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter((p) => {
+                // Show first, last, current, and neighbors
+                return p === 1 || p === totalPages || Math.abs(p - page) <= 1;
+              })
+              .map((p, index, arr) => {
+                const prev = arr[index - 1];
+                const showEllipsis = prev && p - prev > 1;
+                return (
+                  <span key={p} className="flex items-center gap-1">
+                    {showEllipsis && (
+                      <span className="text-sm text-muted-foreground px-1">
+                        …
+                      </span>
+                    )}
+                    <Button
+                      variant={p === page ? "default" : "outline"}
+                      size="sm"
+                      onClick={() => setPage(p)}
+                      className="h-9 w-9 p-0"
+                    >
+                      {p}
+                    </Button>
+                  </span>
+                );
+              })}
+
             <Button
               variant="outline"
               size="icon"

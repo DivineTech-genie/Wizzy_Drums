@@ -111,7 +111,7 @@ export function Step4Deposit({ form }: Step4DepositProps) {
               ₦{minimumDeposit.toLocaleString()}
             </p>
             <p className="text-sm text-muted-foreground mt-1">
-              {depositRate * 100}% deposit of ₦{depositAmount.toLocaleString()}
+              {depositRate}% deposit of ₦{depositAmount.toLocaleString()}
               {flightCharge > 0 && (
                 <> + flight deposit of ₦{flightCharge.toLocaleString()}</>
               )}
