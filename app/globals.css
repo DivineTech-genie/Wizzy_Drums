@@ -49,6 +49,26 @@
   --font-mono: var(--font-geist-mono);
   --font-heading: var(--font-heading, var(--font-playfair-display));
   --font-body: var(--font-body, var(--font-source-sans));
+
+  /* ✅ NEW — Container widths (used across all pages) */
+  --container-content: 80rem; /* 1280px — default page width */
+  --container-narrow: 56rem; /* 896px  — forms, booking flow */
+  --container-wide: 90rem; /* 1440px — lightboxes, full-width media */
+
+  /* ✅ NEW — Page horizontal padding (responsive) */
+  --page-pad-x: 1rem; /* 16px mobile */
+}
+
+@media (min-width: 640px) {
+  :root {
+    --page-pad-x: 1.5rem; /* 24px tablet */
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --page-pad-x: 2rem; /* 32px desktop */
+  }
 }
 
 :root {
@@ -152,30 +172,142 @@
 }
 
 @layer utilities {
-  .container-custom {
-    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  /* ============================================
+     CONTAINERS — use these instead of max-w-*+mx-auto+px-*
+     Every container includes responsive horizontal padding.
+     ============================================ */
+
+  /* Default page width — most content lives here */
+  .container-content {
+    width: 97%;
+    max-width: var(--container-content);
+    margin-inline: auto;
+    padding-inline: var(--page-pad-x);
   }
-  .section-padding {
-    @apply py-16 md:py-24;
+
+  /* Narrow — forms, booking flow, single-column content */
+  .container-narrow {
+    width: 100%;
+    max-width: var(--container-narrow);
+    margin-inline: auto;
+    padding-inline: var(--page-pad-x);
   }
+
+  /* Wide — lightboxes, hero media, full-bleed media grids */
+  .container-wide {
+    width: 100%;
+    max-width: var(--container-wide);
+    margin-inline: auto;
+    padding-inline: var(--page-pad-x);
+  }
+
+  /* ============================================
+     SECTIONS — vertical rhythm between page sections
+     ============================================ */
+
+  /* Standard section spacing (mobile 4rem → desktop 5rem) */
+  .section {
+    @apply py-16 md:py-20;
+  }
+
+  /* Small section — empty states, compact blocks */
+  .section-sm {
+    @apply py-8 md:py-12;
+  }
+
+  /* Page top — offset for fixed navbar */
+  .page-top {
+    @apply pt-20;
+  }
+
+  /* ============================================
+     CARDS — consistent internal padding
+     ============================================ */
+
+  /* Standard card padding — use on every Card.CardContent */
+  .card-pad {
+    @apply p-6;
+  }
+
+  /* Larger card padding — hero panels, feature blocks */
+  .card-pad-lg {
+    @apply p-6 md:p-8;
+  }
+
+  /* ============================================
+     STACKS — vertical spacing inside flex columns
+     ============================================ */
+
+  /* Tight stack — form fields, tight groups */
+  .stack-sm {
+    @apply flex flex-col gap-3;
+  }
+
+  /* Medium stack — cards, list items */
+  .stack-md {
+    @apply flex flex-col gap-4 md:gap-6;
+  }
+
+  /* Large stack — major blocks */
+  .stack-lg {
+    @apply flex flex-col gap-8 md:gap-12;
+  }
+
+  /* ============================================
+     TYPOGRAPHY — heading scale
+     ============================================ */
+
+  /* Hero headlines */
   .heading-xl {
     @apply text-4xl md:text-5xl lg:text-6xl font-heading font-bold tracking-tight;
   }
+
+  /* Section headings */
   .heading-lg {
     @apply text-3xl md:text-4xl font-heading font-bold tracking-tight;
   }
+
+  /* Sub-section headings */
   .heading-md {
     @apply text-2xl md:text-3xl font-heading font-semibold;
   }
+
+  /* Page titles (admin, steps) */
+  .heading-sm {
+    @apply text-xl md:text-2xl font-heading font-bold;
+  }
+
+  /* Card / feature titles */
+  .heading-card {
+    @apply text-lg font-heading font-semibold;
+  }
+
+  /* ============================================
+     TEXT WRAPPERS — max-width helpers
+     ============================================ */
+
+  /* For centered intro paragraphs */
+  .text-wrap-narrow {
+    @apply max-w-2xl mx-auto;
+  }
+
+  /* Balanced text wrapping */
   .text-balance {
     text-wrap: balance;
   }
+
+  /* ============================================
+     EFFECTS
+     ============================================ */
+
   .glass {
     @apply bg-white/10 backdrop-blur-md border border-white/20 dark:bg-black/30 dark:border-white/10;
   }
+
   .gradient-primary {
     @apply bg-linear-to-r from-primary to-primary/60;
   }
+
   .gradient-hero {
     @apply bg-linear-to-br from-primary/15 via-background to-background dark:from-primary/10 dark:via-background dark:to-background;
   }

@@ -25,9 +25,7 @@ const Hero = () => {
   const { getHeroVideo, isLoading } = useMedia();
   const heroVideo = getHeroVideo();
 
-  // ✅ Callback ref — attaches observer at mount time
   const setVideoRef = useCallback((node: HTMLVideoElement | null) => {
-    // Clean up old observer
     if (observerRef.current) {
       observerRef.current.disconnect();
       observerRef.current = null;
@@ -36,18 +34,13 @@ const Hero = () => {
     videoRef.current = node;
     if (!node) return;
 
-    // ✅ Set muted imperatively — React's muted prop is unreliable
     node.muted = true;
-
-    // Try to play immediately
     node.play().catch(() => undefined);
 
-    // Attach viewport observer
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
           node.play().catch(() => {
-            // Fallback: ensure muted and retry
             node.muted = true;
             setIsMuted(true);
             node.play().catch(() => undefined);
@@ -63,7 +56,6 @@ const Hero = () => {
     observerRef.current = observer;
   }, []);
 
-  // ✅ Pause when tab is hidden
   useEffect(() => {
     const handleVisibility = () => {
       const video = videoRef.current;
@@ -83,7 +75,6 @@ const Hero = () => {
       document.removeEventListener("visibilitychange", handleVisibility);
   }, []);
 
-  // ✅ Cleanup observer on unmount
   useEffect(() => {
     return () => {
       if (observerRef.current) {
@@ -100,7 +91,6 @@ const Hero = () => {
     video.muted = !video.muted;
     setIsMuted(video.muted);
 
-    // Ensure video is playing after unmuting
     if (!video.muted) {
       video.play().catch(() => undefined);
     }
@@ -108,10 +98,11 @@ const Hero = () => {
 
   return (
     <section className="relative min-h-screen md:py-12 flex items-center overflow-hidden">
-      {/* <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(114,113,253,0.18),transparent_24%),radial-gradient(circle_at_bottom_left,rgba(38,198,218,0.14),transparent_28%)]" /> */}
-      {/* <div className="absolute inset-x-0 top-0 h-24 bg-linear-to-b from-background/95 to-transparent" /> */}
+      {/* Decorative blur circles */}
       <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
       <div className="pointer-events-none absolute -right-24 bottom-12 h-64 w-64 rounded-full bg-secondary/15 blur-3xl" />
+
+      {/* Decorative SVG */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <svg
           viewBox="0 0 600 600"
@@ -143,10 +134,11 @@ const Hero = () => {
       </div>
 
       <motion.div
-        className="container-custom relative z-10 pt-20"
+        className="container-content relative z-10 pt-20"
         style={{ y }}
       >
         <div className="grid lg:grid-cols-[1.1fr_0.9fr] gap-12 items-center">
+          {/* Left: Text */}
           <div className="max-w-2xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -185,17 +177,14 @@ const Hero = () => {
               transition={{ duration: 0.6, delay: 0.3 }}
               className="flex flex-wrap gap-4"
             >
-              <Link
-                href="/book"
-                className="flex items-center gap-2 shadow-lg shadow-primary/10"
-              >
-                <Button size="lg" className="">
+              <Link href="/book">
+                <Button size="lg" className="gap-2 shadow-lg shadow-primary/10">
                   Check Availability
                   <ArrowRight className="h-4 w-4" />
                 </Button>
               </Link>
-              <Link href="/gallery" className="flex items-center gap-2">
-                <Button size="lg" variant="outline">
+              <Link href="/gallery">
+                <Button size="lg" variant="outline" className="gap-2">
                   <Play className="h-4 w-4" />
                   Watch Reel
                 </Button>
@@ -235,6 +224,7 @@ const Hero = () => {
             </motion.div>
           </div>
 
+          {/* Right: Video */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}

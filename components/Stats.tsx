@@ -12,7 +12,7 @@ const Stats = () => {
   ];
 
   return (
-    <section className="section-padding container-custom">
+    <section className="section container-content">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
         {stats.map((stat, index) => (
           <motion.div

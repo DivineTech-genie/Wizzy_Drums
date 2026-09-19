@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 
 const CTA = () => {
   return (
-    <section className="section-padding container-custom">
+    <section className="section container-content">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         whileInView={{ opacity: 1, scale: 1 }}
@@ -20,12 +20,14 @@ const CTA = () => {
         <div className="pointer-events-none absolute bottom-10 left-10 h-24 w-24 rounded-full bg-primary/10 blur-3xl" />
 
         <div className="relative z-10">
-          <h2 className="heading-md mb-4">Ready to elevate your next event?</h2>
+          <h2 className="heading-md mb-4">
+            Ready to bring live drumming to your event?
+          </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto mb-8 leading-8">
-            Share your event goals and we&apos;ll design an entertainment
-            package that makes every moment unforgettable.
+            Tell me about your event and I&apos;ll come back with availability,
+            a tailored set, and a transparent quote.
           </p>
-          <Link href="/book" className="inline-flex justify-center">
+          <Link href="/book">
             <Button size="lg" className="gap-2 shadow-lg shadow-primary/10">
               Get Your Quote Now
               <ArrowRight className="h-4 w-4" />
@@ -33,7 +35,7 @@ const CTA = () => {
           </Link>
           <div className="mt-8 grid gap-4 sm:grid-cols-2 md:grid-cols-4">
             {[
-              { label: "Tailored packages", accent: "bg-primary/10" },
+              { label: "Tailored sets", accent: "bg-primary/10" },
               { label: "Fast response", accent: "bg-secondary/10" },
               { label: "Transparent pricing", accent: "bg-primary/10" },
               { label: "Dedicated support", accent: "bg-secondary/10" },
