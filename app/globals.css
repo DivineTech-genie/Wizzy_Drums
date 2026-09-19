@@ -207,7 +207,7 @@
 
   /* Standard section spacing (mobile 4rem → desktop 5rem) */
   .section {
-    @apply py-16 md:py-20;
+    @apply py-10 md:py-16;
   }
 
   /* Small section — empty states, compact blocks */
