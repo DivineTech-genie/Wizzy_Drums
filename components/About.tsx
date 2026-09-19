@@ -32,13 +32,13 @@ export default function AboutPage() {
       icon: Clock,
       title: "Punctual. Prepared. Professional.",
       description:
-        "We arrive early, set up fast, and coordinate with your sound team so nothing disrupts the schedule. Every event starts and ends on your timeline.",
+        "I arrive early, set up fast, and coordinate with your sound team so nothing disrupts the schedule. Every event starts and ends on your timeline.",
     },
     {
       icon: Music2,
       title: "Range That Reads The Room.",
       description:
-        "Afrobeat to highlife, gospel to R&B, contemporary pop to classics every set is tailored to your audience, not a fixed playlist.",
+        "Afrobeat to highlife, gospel to R&B, contemporary pop to classics — every set is tailored to your audience, not a fixed playlist.",
     },
     {
       icon: Plane,
@@ -81,10 +81,10 @@ export default function AboutPage() {
   ];
 
   return (
-    <main className="flex-1 pt-24">
+    <main className="flex-1 page-top">
       {/* Hero */}
-      <section className="relative md:py-16 bg-linear-to-br from-primary/5 via-background to-background">
-        <div className="container-custom text-center">
+      <section className="relative section bg-linear-to-br from-primary/5 via-background to-background">
+        <div className="container-content text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -108,16 +108,16 @@ export default function AboutPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-muted-foreground max-w-2xl mx-auto text-lg"
+            className="text-muted-foreground text-wrap-narrow text-lg"
           >
-            A Nigerian drummer and live performance artist turning events into
+            A Nigerian drummer and live performer turning events into
             unforgettable experiences, one beat at a time.
           </motion.p>
         </div>
       </section>
 
       {/* Bio + Image */}
-      <section className="container-custom py-16">
+      <section className="section container-content">
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
@@ -133,23 +133,23 @@ export default function AboutPage() {
 
             <div className="space-y-4 text-muted-foreground leading-relaxed">
               <p>
-                Wizzy is a professional drummer and live performance artist
-                based in Enugu, Nigeria — known for a stage presence that pulls
-                audiences in and a rhythm that keeps them there. From intimate
-                wedding receptions to headline festival stages, every
-                performance is built to be felt, not just heard.
+                Wizzy is a professional drummer based in Enugu, Nigeria — known
+                for a stage presence that pulls audiences in and a rhythm that
+                keeps them there. From intimate wedding receptions to headline
+                festival stages, every performance is built to be felt, not just
+                heard.
               </p>
               <p>
                 With over a decade behind the kit, Wizzy has shared stages with
                 some of Nigeria&apos;s biggest acts and performed at 120+ events
                 across 30 cities — weddings, corporate galas, festivals,
-                nightclub residencies, and private celebrations. His repertoire
+                nightclub residencies, and private celebrations. His playing
                 moves fluidly between Afrobeat, highlife, R&amp;B, gospel, and
                 contemporary pop, reading the room and matching the energy of
                 the moment.
               </p>
               <p>
-                Beyond the music, it&apos;s the professionalism that keeps
+                Beyond the Playing, it&apos;s the professionalism that keeps
                 clients coming back. Punctual arrivals. Clean setups. Seamless
                 coordination with sound and production teams. And a genuine
                 commitment to making your event feel special from the first
@@ -158,12 +158,14 @@ export default function AboutPage() {
             </div>
 
             <div className="flex flex-wrap gap-3 mt-8">
-              <Button className="gap-2">
-                <Link href="/book">Book Wizzy</Link>
-              </Button>
-              <Button variant="outline" className="gap-2">
-                <Link href="/gallery">View Gallery</Link>
-              </Button>
+              <Link href="/book">
+                <Button className="gap-2">Book Wizzy</Button>
+              </Link>
+              <Link href="/gallery">
+                <Button variant="outline" className="gap-2">
+                  View Gallery
+                </Button>
+              </Link>
             </div>
           </motion.div>
 
@@ -183,7 +185,6 @@ export default function AboutPage() {
                 sizes="(min-width:1024px) 33vw, (min-width:768px) 50vw, 100vw"
                 className="w-full h-full object-cover object-top"
               />
-              {/* Floating badge */}
               <div className="absolute bottom-4 left-4 right-4 flex items-center gap-3 rounded-2xl border border-white/20 bg-white/90 p-3 backdrop-blur-xl dark:bg-slate-950/70">
                 <div className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/15">
                   <Star className="h-5 w-5 fill-primary text-primary" />
@@ -201,8 +202,8 @@ export default function AboutPage() {
       </section>
 
       {/* Stats */}
-      <section className="py-16 bg-muted/30">
-        <div className="container-custom">
+      <section className="section bg-muted/30">
+        <div className="container-content">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
               <motion.div
@@ -224,21 +225,21 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Why Book Wizzy — replaces Press Kit + Tech Rider */}
-      <section className="container-custom py-20">
+      {/* Why Book Wizzy */}
+      <section className="section container-content">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center max-w-2xl mx-auto mb-14"
+          className="text-center text-wrap-narrow mb-14"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-3">
-            Why Book Us
+            Why Book Wizzy
           </p>
           <h2 className="heading-md mb-4">Built For Events That Matter</h2>
           <p className="text-muted-foreground">
-            Every booking is treated like the headline act because to your
+            Every booking is treated like the headline act — because to your
             guests, it is.
           </p>
         </motion.div>
@@ -253,13 +254,11 @@ export default function AboutPage() {
               viewport={{ once: true }}
             >
               <Card className="h-full hover:shadow-lg hover:border-primary/30 transition-all duration-300">
-                <CardContent className="p-6">
+                <CardContent className="card-pad">
                   <div className="inline-flex p-3 rounded-xl bg-primary/10 mb-5">
                     <item.icon className="h-6 w-6 text-primary" />
                   </div>
-                  <h3 className="font-heading text-lg font-semibold mb-3">
-                    {item.title}
-                  </h3>
+                  <h3 className="heading-card mb-3">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>
@@ -270,22 +269,22 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Performance Moments — replaces Technical Requirements */}
-      <section className="py-20 bg-muted/30">
-        <div className="container-custom">
+      {/* Performance Moments */}
+      <section className="section bg-muted/30">
+        <div className="container-content">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
             viewport={{ once: true }}
-            className="text-center max-w-2xl mx-auto mb-14"
+            className="text-center text-wrap-narrow mb-14"
           >
             <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-3">
               Signature Sets
             </p>
             <h2 className="heading-md mb-4">A Performance For Every Stage</h2>
             <p className="text-muted-foreground">
-              Each event type gets a performance built for it not a template.
+              Each event type gets a performance built for it — not a template.
             </p>
           </motion.div>
 
@@ -305,9 +304,7 @@ export default function AboutPage() {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-heading font-semibold mb-1">
-                    {item.title}
-                  </h3>
+                  <h3 className="heading-card mb-1">{item.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">
                     {item.description}
                   </p>
@@ -318,21 +315,21 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Trusted By — redesigned */}
-      <section className="container-custom py-20">
+      {/* Trusted By */}
+      <section className="section container-content">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true }}
-          className="text-center max-w-2xl mx-auto mb-14"
+          className="text-center text-wrap-narrow mb-14"
         >
           <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary mb-3">
             Clients & Stages
           </p>
           <h2 className="heading-md mb-4">Trusted By The Best</h2>
           <p className="text-muted-foreground">
-            From corporate giants to headline festivals brands that put their
+            From corporate giants to headline festivals — brands that put their
             name on the line choose Wizzy.
           </p>
         </motion.div>
@@ -371,7 +368,7 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <section className="container-custom pb-20">
+      <section className="section container-content pb-20">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
@@ -379,7 +376,6 @@ export default function AboutPage() {
           viewport={{ once: true }}
           className="relative overflow-hidden rounded-3xl bg-linear-to-br from-primary/20 via-primary/10 to-background p-8 md:p-16 text-center"
         >
-          {/* Decorative circles */}
           <div className="pointer-events-none absolute -top-12 -right-12 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-12 -left-12 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
 
@@ -392,9 +388,11 @@ export default function AboutPage() {
               Dates fill up fast during peak season. Check availability and lock
               your event date today.
             </p>
-            <Button size="lg" className="gap-2">
-              <Link href="/book">Check Availability</Link>
-            </Button>
+            <Link href="/book">
+              <Button size="lg" className="gap-2">
+                Check Availability
+              </Button>
+            </Link>
           </div>
         </motion.div>
       </section>
