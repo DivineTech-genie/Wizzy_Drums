@@ -172,12 +172,12 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
   const accommodationMissing = outsideEast && !requiresAccommodation;
 
   return (
-    <div className="space-y-8">
+    <div className="stack-lg">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-heading font-bold">Travel & Logistics</h2>
+        <h2 className="heading-sm">Travel & Logistics</h2>
         <p className="text-muted-foreground text-sm">
-          Help us plan the logistics for your event
+          Help me plan the logistics for your event
         </p>
       </div>
 
@@ -216,7 +216,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
       {/* Logistics section */}
       <TravelLogisticsForm form={form} />
 
-      {/* Missing fields warning banner (outside East only) */}
+      {/* Missing fields warning */}
       {outsideEast && (flightMissing || accommodationMissing) && (
         <div className="rounded-xl border border-destructive/30 bg-destructive/5 p-4 text-destructive">
           <p className="flex items-center gap-2 text-sm font-medium">
@@ -250,7 +250,7 @@ export function Step2Logistics({ form }: Step2LogisticsProps) {
       {shouldShowUploadSection && (
         <div
           className={cn(
-            "space-y-4 rounded-xl border bg-muted/20 p-4",
+            "stack-md rounded-xl border bg-muted/20 p-4",
             outsideEast &&
               ((requiresFlightUpload && !flightTicketUrl) ||
                 (requiresAccommodation && !hotelTicketUrl))

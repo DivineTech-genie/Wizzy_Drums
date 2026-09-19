@@ -42,15 +42,15 @@ export default function LoginPage() {
       }
 
       router.push("/admin");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Something went wrong");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to from-background via-background to-primary/5 p-4">
+    <div className="relative min-h-screen flex items-center justify-center bg-linear-to-br from-background via-background to-primary/5 p-4">
       {/* Decorative Elements */}
       <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10" />
       <div className="absolute bottom-0 left-0 w-72 h-72 bg-primary/5 rounded-full blur-3xl -z-10" />
@@ -75,7 +75,7 @@ export default function LoginPage() {
               <Shield className="h-8 w-8 text-primary" />
             </motion.div>
 
-            <CardTitle className="text-2xl font-heading tracking-tight">
+            <CardTitle className="heading-sm tracking-tight">
               Welcome Back
             </CardTitle>
             <CardDescription className="text-muted-foreground text-sm">
@@ -84,8 +84,8 @@ export default function LoginPage() {
           </CardHeader>
 
           <CardContent className="pt-4 px-6 pb-8">
-            <form onSubmit={handleLogin} className="space-y-5">
-              <div className="space-y-2">
+            <form onSubmit={handleLogin} className="stack-md">
+              <div className="stack-sm">
                 <label
                   htmlFor="password"
                   className="text-sm font-medium text-foreground/80 block"
@@ -102,7 +102,7 @@ export default function LoginPage() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="Enter your passcode"
-                    className="pl-10 pr-12 py-2.5 bg-background/50 border-muted focus:border-primary focus:ring-primary/20"
+                    className="input-base pl-10! pr-12! bg-background/50"
                     disabled={loading}
                     autoFocus
                   />
@@ -110,6 +110,9 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                    aria-label={
+                      showPassword ? "Hide passcode" : "Show passcode"
+                    }
                   >
                     {showPassword ? (
                       <EyeOff className="h-4 w-4" />
@@ -133,8 +136,9 @@ export default function LoginPage() {
 
               <Button
                 type="submit"
+                size="lg"
                 disabled={loading}
-                className="w-full py-2.5 text-base font-semibold gap-2 group"
+                className="w-full gap-2 group"
               >
                 {loading ? (
                   <>
@@ -149,7 +153,6 @@ export default function LoginPage() {
                 )}
               </Button>
 
-              {/* Optional: Version / footer */}
               <p className="text-center text-[10px] text-muted-foreground/50 pt-2">
                 Secure • Admin Access Only
               </p>

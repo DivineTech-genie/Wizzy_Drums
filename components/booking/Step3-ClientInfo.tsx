@@ -10,16 +10,16 @@ interface Step3ClientInfoProps {
 
 export function Step3ClientInfo({ form }: Step3ClientInfoProps) {
   return (
-    <div className="space-y-8">
+    <div className="stack-lg">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-heading font-bold">Your Information</h2>
+        <h2 className="heading-sm">Your Information</h2>
         <p className="text-muted-foreground text-sm">
-          We&apos;ll send your quote and booking confirmation to these details
+          I&apos;ll send your quote and booking confirmation to these details
         </p>
       </div>
 
-      <div className="max-w-lg mx-auto space-y-5">
+      <div className="max-w-lg mx-auto stack-md">
         <div className="relative">
           <CustomInputField
             form={form}

@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useSettings } from "@/hooks/admin/useSettings";
 
 const renderBrandName = (name: string) => {
-  const trimmedName = name?.trim() || "StageBook";
+  const trimmedName = name?.trim() || "Wizzy Drums";
   const spacedName = trimmedName.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
   const words = spacedName.split(/\s+/).filter(Boolean);
   const primaryWord = words[0] ?? trimmedName;
@@ -55,13 +55,12 @@ const Navbar = () => {
           : "bg-transparent"
       }`}
     >
-      <div className="container-custom flex items-center justify-between h-16 md:h-20">
+      <div className="container-content flex items-center justify-between h-16 md:h-20">
         {/* Logo */}
-        <Link
-          href="/"
-          className="flex items-center gap-2 font-heading text-xl font-bold"
-        >
-          <h1>{renderBrandName(settings.siteName)}</h1>
+        <Link href="/" className="flex items-center gap-2">
+          <h1 className="font-heading text-xl font-bold">
+            {renderBrandName(settings.siteName)}
+          </h1>
         </Link>
 
         {/* Desktop Nav */}
@@ -100,7 +99,7 @@ const Navbar = () => {
             exit={{ opacity: 0, height: 0 }}
             className="md:hidden bg-background border-b"
           >
-            <div className="container-custom py-4 flex flex-col gap-4">
+            <div className="container-content py-4 stack-sm">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}

@@ -48,7 +48,7 @@ export default function ContactPage() {
     {
       icon: MapPin,
       label: "Location",
-      value: "Lagos, Nigeria",
+      value: "Enugu, Nigeria",
       href: "#",
     },
   ]);
@@ -109,10 +109,10 @@ export default function ContactPage() {
   }, [settings.contactDetails]);
 
   return (
-    <main className="flex-1 pt-20">
+    <main className="flex-1 page-top">
       {/* Hero */}
-      <section className="relative py-16 bg-gradient-to from-primary/5 via-background to-background">
-        <div className="container-custom text-center">
+      <section className="relative section bg-linear-to-br from-primary/5 via-background to-background">
+        <div className="container-content text-center">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -125,15 +125,15 @@ export default function ContactPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="text-muted-foreground max-w-2xl mx-auto"
+            className="text-muted-foreground text-wrap-narrow"
           >
-            Have a question? Want to book? Or just want to say hello? We&apos;d
+            Have a question? Want to book? Or just want to say hello? I&apos;d
             love to hear from you.
           </motion.p>
         </div>
       </section>
 
-      <section className="container-custom py-16">
+      <section className="section container-content">
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Contact Info */}
           <div className="space-y-4">
@@ -163,13 +163,13 @@ export default function ContactPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="p-6 rounded-xl bg-card border"
+              className="card-pad rounded-xl bg-card border"
             >
               {success && (
                 <div className="mb-6 p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg flex items-center gap-3 text-emerald-600">
                   <CheckCircle className="h-5 w-5" />
                   <span>
-                    Your message has been sent. We&apos;ll get back to you
+                    Your message has been sent. I&apos;ll get back to you
                     shortly!
                   </span>
                 </div>
@@ -182,15 +182,15 @@ export default function ContactPage() {
                 </div>
               )}
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+              <form onSubmit={handleSubmit(onSubmit)} className="stack-md">
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
+                  <div className="stack-sm">
                     <Label htmlFor="name">Full Name</Label>
                     <Input
                       id="name"
                       placeholder="John Doe"
                       {...register("name")}
-                      className={errors.name ? "border-destructive" : ""}
+                      className={`input-base ${errors.name ? "input-error" : ""}`}
                     />
                     {errors.name && (
                       <p className="text-xs text-destructive">
@@ -198,14 +198,14 @@ export default function ContactPage() {
                       </p>
                     )}
                   </div>
-                  <div className="space-y-2">
+                  <div className="stack-sm">
                     <Label htmlFor="email">Email Address</Label>
                     <Input
                       id="email"
                       type="email"
                       placeholder="john@example.com"
                       {...register("email")}
-                      className={errors.email ? "border-destructive" : ""}
+                      className={`input-base ${errors.email ? "input-error" : ""}`}
                     />
                     {errors.email && (
                       <p className="text-xs text-destructive">
@@ -215,13 +215,13 @@ export default function ContactPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
+                <div className="stack-sm">
                   <Label htmlFor="subject">Subject</Label>
                   <Input
                     id="subject"
                     placeholder="Booking inquiry"
                     {...register("subject")}
-                    className={errors.subject ? "border-destructive" : ""}
+                    className={`input-base ${errors.subject ? "input-error" : ""}`}
                   />
                   {errors.subject && (
                     <p className="text-xs text-destructive">
@@ -230,14 +230,14 @@ export default function ContactPage() {
                   )}
                 </div>
 
-                <div className="space-y-2">
+                <div className="stack-sm">
                   <Label htmlFor="message">Message</Label>
                   <Textarea
                     id="message"
-                    placeholder="Tell us about your event..."
+                    placeholder="Tell me about your event..."
                     rows={5}
                     {...register("message")}
-                    className={errors.message ? "border-destructive" : ""}
+                    className={`textarea-base ${errors.message ? "input-error" : ""}`}
                   />
                   {errors.message && (
                     <p className="text-xs text-destructive">

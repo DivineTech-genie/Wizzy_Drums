@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { Calendar, ArrowRight, CheckCircle, Quote } from "lucide-react";
+import { Calendar, ArrowRight, CheckCircle, Receipt } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
@@ -12,25 +12,25 @@ const HowItWorks = () => {
       icon: Calendar,
       title: "Submit Your Event Details",
       description:
-        "Tell us your date, venue, and performance requirements. We'll handle the logistics.",
+        "Tell me your date, venue, and what you need from the performance. I'll handle the logistics.",
     },
     {
-      icon: Quote,
+      icon: Receipt,
       title: "Review Your Custom Quote",
       description:
-        "Get a transparent, itemized quote including performance fee, travel, and accommodation.",
+        "Get a transparent, itemized quote covering the performance fee, travel, and any accommodation.",
     },
     {
       icon: CheckCircle,
       title: "Confirm & Lock Your Date",
       description:
-        "Sign the agreement and secure your date with a deposit. Your event is officially booked!",
+        "Sign the agreement and secure your date with a deposit. Your performance is officially booked.",
     },
   ];
 
   return (
-    <section className="section-padding bg-muted/30">
-      <div className="container-custom">
+    <section className="section bg-muted/30">
+      <div className="container-content">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -40,7 +40,7 @@ const HowItWorks = () => {
         >
           <h2 className="heading-lg mb-4">How it works</h2>
           <p className="text-muted-foreground">
-            One smooth process from inquiry to performance — designed for busy
+            One smooth process from inquiry to performance built for busy
             event teams.
           </p>
         </motion.div>
@@ -58,13 +58,11 @@ const HowItWorks = () => {
               className="relative"
             >
               <Card className="h-full rounded-[2rem] border border-border bg-background shadow-sm transition-shadow hover:shadow-lg">
-                <CardContent className="p-6 pt-8 text-center">
+                <CardContent className="card-pad pt-8 text-center">
                   <div className="inline-flex h-16 w-16 items-center justify-center rounded-3xl bg-primary/10 mb-5 mx-auto">
                     <step.icon className="h-7 w-7 text-primary" />
                   </div>
-                  <h3 className="font-heading text-xl font-semibold mb-2">
-                    {step.title}
-                  </h3>
+                  <h3 className="heading-card mb-2">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-7">
                     {step.description}
                   </p>
@@ -81,7 +79,7 @@ const HowItWorks = () => {
           viewport={{ once: true }}
           className="text-center mt-12"
         >
-          <Link href="/book" className="inline-flex">
+          <Link href="/book">
             <Button size="lg" className="gap-2 shadow-lg shadow-primary/10">
               Start Your Booking
               <ArrowRight className="h-4 w-4" />

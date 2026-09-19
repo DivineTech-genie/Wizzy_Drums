@@ -11,7 +11,7 @@ import Link from "next/link";
 import { useSettings } from "@/hooks/admin/useSettings";
 
 const renderBrandName = (name: string) => {
-  const trimmedName = name?.trim() || "StageBook";
+  const trimmedName = name?.trim() || "Wizzy Drums";
   const spacedName = trimmedName.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
   const words = spacedName.split(/\s+/).filter(Boolean);
   const primaryWord = words[0] ?? trimmedName;
@@ -56,19 +56,20 @@ const Footer = () => {
 
   return (
     <footer className="border-t bg-muted/30">
-      <div className="container-custom py-12">
+      <div className="container-content py-12">
         <div className="grid md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-heading text-xl font-bold mb-4">
+            <h3 className="heading-card mb-4">
               {renderBrandName(settings.siteName)}
             </h3>
             <p className="text-sm text-muted-foreground max-w-xs">
-              {settings.tagline || "Book unforgettable live performances."}
+              {settings.tagline ||
+                "Live drumming that turns moments into memories."}
             </p>
           </div>
           <div>
             <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="stack-sm text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/book"
@@ -101,11 +102,19 @@ const Footer = () => {
                   Contact
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/admin"
+                  className="hover:text-foreground transition-colors"
+                >
+                  Login
+                </Link>
+              </li>
             </ul>
           </div>
           <div>
             <h4 className="font-semibold mb-4">Legal</h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
+            <ul className="stack-sm text-sm text-muted-foreground">
               <li>
                 <Link
                   href="/terms"
@@ -150,7 +159,7 @@ const Footer = () => {
                 ))
               ) : (
                 <p className="text-sm text-muted-foreground">
-                  Follow us on social media
+                  Follow on social media
                 </p>
               )}
             </div>
