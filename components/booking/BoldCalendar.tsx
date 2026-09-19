@@ -87,7 +87,7 @@ export function BoldCalendar({
           </Button>
           <div className="flex items-center gap-2">
             <CalendarIcon className="h-5 w-5 text-primary" />
-            <span className="font-heading text-lg font-semibold">
+            <span className="heading-card">
               {format(currentMonth, "MMMM yyyy")}
             </span>
           </div>
@@ -151,17 +151,14 @@ export function BoldCalendar({
                 )}
               >
                 {format(day, "d")}
-                {/* Booked indicator dot */}
                 {isBooked && isCurrentMonth && (
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-red-500" />
                 )}
-                {/* Selected indicator */}
                 {isSelected && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-primary-foreground/20 text-[8px] flex items-center justify-center">
                     <Check className="h-2.5 w-2.5" />
                   </span>
                 )}
-                {/* Today dot */}
                 {isCurrentDay && !isSelected && (
                   <span className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full bg-primary" />
                 )}

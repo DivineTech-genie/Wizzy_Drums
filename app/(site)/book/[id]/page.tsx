@@ -62,27 +62,29 @@ export default function BookingRequestPage() {
 
   if (error || !booking) {
     return (
-      <div className="mx-auto max-w-xl rounded-xl border border-destructive/30 bg-destructive/5 p-6 text-center">
-        <h1 className="text-2xl font-heading">Request not found</h1>
-        <p className="mt-2 text-muted-foreground">
-          {error || "We couldn’t find this booking request."}
-        </p>
-        <Button
-          className="mt-4"
-          onClick={() => (window.location.href = "/book")}
-        >
-          Back to booking
-        </Button>
+      <div className="container-narrow section">
+        <div className="rounded-xl border border-destructive/30 bg-destructive/5 card-pad text-center">
+          <h1 className="heading-sm">Request not found</h1>
+          <p className="mt-2 text-muted-foreground">
+            {error || "I couldn't find this booking request."}
+          </p>
+          <Button
+            className="mt-4"
+            onClick={() => (window.location.href = "/book")}
+          >
+            Back to booking
+          </Button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6 py-10">
+    <div className="container-narrow stack-md py-10">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <p className="text-sm text-muted-foreground">Booking request</p>
-          <h1 className="text-3xl font-heading">#{booking._id.slice(-8)}</h1>
+          <h1 className="heading-sm">#{booking._id.slice(-8)}</h1>
         </div>
         <Badge
           variant={
@@ -98,19 +100,16 @@ export default function BookingRequestPage() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-        <div className="space-y-6">
-          <div className="rounded-xl border bg-card p-5 shadow-sm">
-            <h2 className="mb-4 text-lg font-semibold">Your event request</h2>
+        <div className="stack-md">
+          <div className="rounded-xl border bg-card card-pad shadow-sm">
+            <h2 className="heading-card mb-4">Your event request</h2>
             <div className="grid gap-4 sm:grid-cols-2">
               <InfoRow
                 icon={<Calendar className="h-4 w-4" />}
                 label="Date"
                 value={format(new Date(booking.eventDate), "dd MMMM yyyy")}
               />
-              <InfoRow
-                label="Event type"
-                value={booking.eventType}
-              />
+              <InfoRow label="Event type" value={booking.eventType} />
               <InfoRow
                 icon={<Calendar className="h-4 w-4" />}
                 label="Submitted"
@@ -124,10 +123,10 @@ export default function BookingRequestPage() {
           </div>
         </div>
 
-        <aside className="space-y-6">
-          <div className="rounded-xl border bg-card p-5 shadow-sm">
-            <h2 className="mb-3 text-lg font-semibold">Request status</h2>
-            <div className="space-y-3 text-sm">
+        <aside className="stack-md">
+          <div className="rounded-xl border bg-card card-pad shadow-sm">
+            <h2 className="heading-card mb-3">Request status</h2>
+            <div className="stack-sm text-sm">
               <div className="flex items-center justify-between rounded-md bg-muted/40 p-3">
                 <span>Current status</span>
                 <span className="font-medium capitalize">{booking.status}</span>

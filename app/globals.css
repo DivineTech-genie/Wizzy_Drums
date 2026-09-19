@@ -229,9 +229,14 @@
     @apply p-6;
   }
 
+  /* Medium card padding — step content, larger cards */
+  .card-pad-md {
+    @apply p-6 md:p-8;
+  }
+
   /* Larger card padding — hero panels, feature blocks */
   .card-pad-lg {
-    @apply p-6 md:p-8;
+    @apply p-8 md:p-12;
   }
 
   /* ============================================
@@ -280,6 +285,33 @@
   /* Card / feature titles */
   .heading-card {
     @apply text-lg font-heading font-semibold;
+  }
+
+  /* ============================================
+  FORM FIELDS — consistent input sizing
+  ============================================ */
+
+  /* Base input — 16px font prevents mobile auto-zoom */
+  .input-base {
+    @apply w-full min-w-0 text-base;
+    @apply px-4 py-2.5 h-11;
+    @apply rounded-xl border bg-background;
+    @apply appearance-none;
+    @apply transition-all;
+  }
+
+  /* Textarea — same base but auto height */
+  .textarea-base {
+    @apply w-full min-w-0 text-base;
+    @apply px-4 py-2.5;
+    @apply rounded-xl border bg-background;
+    @apply appearance-none;
+    @apply transition-all resize-none;
+  }
+
+  /* Error state — add alongside input-base/textarea-base */
+  .input-error {
+    @apply border-destructive focus:border-destructive focus:ring-destructive/20;
   }
 
   /* ============================================

@@ -275,9 +275,9 @@ export function MainBooking() {
   };
 
   return (
-    <div className="md:w-4xl w-full mx-auto px-4 py-8">
+    <div className="container-narrow stack-md py-8">
       {/* Step Indicator */}
-      <div className="mb-8">
+      <div>
         <StepIndicator
           currentStep={currentStep}
           totalSteps={totalSteps}
@@ -286,13 +286,13 @@ export function MainBooking() {
       </div>
 
       {/* Step Content */}
-      <div className="bg-card rounded-2xl border shadow-lg p-6 md:p-8">
+      <div className="bg-card rounded-2xl border shadow-lg card-pad-md">
         {renderStep()}
       </div>
 
       {/* Navigation */}
       {currentStep < totalSteps && (
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between">
           <Button
             variant="outline"
             onClick={prevStep}
@@ -310,7 +310,7 @@ export function MainBooking() {
       )}
 
       {currentStep === totalSteps && (
-        <div className="flex justify-between mt-6">
+        <div className="flex justify-between">
           <Button variant="outline" onClick={prevStep} className="gap-2">
             <ArrowLeft className="h-4 w-4" />
             Back
@@ -327,7 +327,7 @@ export function MainBooking() {
               handleSubmit();
             }}
             disabled={isLoading}
-            className="gap-2 bg-primary hover:bg-primary/90"
+            className="gap-2"
           >
             <Check className="h-4 w-4" />
             {isLoading ? "Submitting..." : "Submit Booking"}

@@ -87,18 +87,18 @@ export function Step1EventDetails({
   }
 
   return (
-    <div className="space-y-8">
+    <div className="stack-lg">
       <div className="text-center">
-        <h2 className="text-2xl font-heading font-bold">Event Details</h2>
+        <h2 className="heading-sm">Event Details</h2>
         <p className="text-muted-foreground text-sm">
-          Tell us about your event so we can prepare the perfect experience
+          Tell me about your event so I can prepare the perfect performance
         </p>
       </div>
 
       <div className="grid md:grid-cols-2 gap-8">
         {/* Left Column - Form Fields */}
-        <div className="space-y-4">
-          {/* Event Type - Dynamic from Database */}
+        <div className="stack-md">
+          {/* Event Type */}
           <div>
             <label className="block text-sm font-medium text-foreground mb-1.5">
               Event Type
@@ -121,7 +121,7 @@ export function Step1EventDetails({
           </div>
 
           {/* Price & Deposit Display */}
-          <div className="rounded-3xl border border-primary/10 bg-primary/5 p-4 mt-3">
+          <div className="rounded-3xl border border-primary/10 bg-primary/5 p-4">
             <p className="text-sm text-muted-foreground">
               Estimated booking quote
             </p>

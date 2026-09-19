@@ -81,11 +81,9 @@ export function Step4Deposit({ form }: Step4DepositProps) {
 
   return (
     <>
-      <div className="space-y-8">
+      <div className="stack-lg">
         <div className="text-center">
-          <h2 className="text-2xl font-heading font-bold">
-            Deposit & Lock Date
-          </h2>
+          <h2 className="heading-sm">Deposit & Lock Date</h2>
           <p className="text-muted-foreground text-sm">
             Confirm the deposit amount to secure your event date and travel
             support.
@@ -128,9 +126,9 @@ export function Step4Deposit({ form }: Step4DepositProps) {
               <div>
                 <p className="font-medium">Flight deposit added</p>
                 <p className="text-sm text-muted-foreground">
-                  Because you chose “Charge flights to quote”, the flight
-                  deposit of ₦{flightCharge.toLocaleString()} has been included
-                  in the total.
+                  Because you chose &quot;Charge flights to quote&quot;, the
+                  flight deposit of ₦{flightCharge.toLocaleString()} has been
+                  included in the total.
                 </p>
               </div>
             </div>

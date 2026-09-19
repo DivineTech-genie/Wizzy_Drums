@@ -42,22 +42,20 @@ export function TravelLogisticsForm({
   if (!stateValue.trim()) return null;
 
   return (
-    <div className="p-4 rounded-lg bg-mauve-50 border border-primary/10 space-y-4 text-slate-900">
+    <div className="p-4 rounded-lg bg-mauve-50 border border-primary/10 stack-md text-slate-900">
       {isLocal ? (
-        // ✅ New within-East copy
         <div className="space-y-1">
           <p className="text-sm font-bold text-emerald-600 flex items-center gap-1.5">
             <Pin className="h-4 w-4" />
             You&apos;re all set — this is a local event within the East.
           </p>
           <p className="text-xs text-slate-600">
-            No flights or accommodation are required. We&apos;re excited to be
+            No flights or accommodation are required. I&apos;m excited to be
             part of this moment with you.
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
-          {/* ✅ Updated notice */}
+        <div className="stack-md">
           <div className="text-red-900 p-3 text-xs border border-primary/10 rounded-xl bg-mauve-100">
             <p className="flex items-start gap-2">
               <TriangleAlert className="h-4 w-4 shrink-0 mt-0.5" />
@@ -70,7 +68,7 @@ export function TravelLogisticsForm({
             </p>
           </div>
 
-          <Field className="space-y-3">
+          <Field className="stack-sm">
             <FieldLabel className="text-xs font-bold uppercase text-slate-500">
               Flight Arrangement
             </FieldLabel>
@@ -134,14 +132,13 @@ export function TravelLogisticsForm({
                 <div>
                   <p className="font-medium">Charge flights to quote</p>
                   <p className="text-xs text-muted-foreground">
-                    We&apos;ll add the flight cost to your deposit and quote.
+                    I&apos;ll add the flight cost to your deposit and quote.
                   </p>
                 </div>
               </label>
             </div>
           </Field>
 
-          {/* ✅ Accommodation — now mandatory for outside East */}
           <Controller
             control={form.control}
             name="requiresAccommodation"

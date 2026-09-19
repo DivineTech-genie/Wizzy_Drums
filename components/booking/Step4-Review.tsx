@@ -4,6 +4,7 @@ import { UseFormReturn } from "react-hook-form";
 import { Check, Calendar, User, Plane } from "lucide-react";
 import { BookingFormValues } from "@/app/backend/validators/validators";
 import { useBookingPricing } from "@/hooks/useBookingPricing";
+import { Button } from "../ui/button";
 
 interface Step4ReviewProps {
   form: UseFormReturn<BookingFormValues>;
@@ -14,11 +15,9 @@ interface Step4ReviewProps {
 export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
   const data = form.getValues();
 
-  // 🔥 Use the pricing hook
   const {
     eventPrice,
     depositRate,
-    depositAmount,
     flightDepositAmount,
     totalDeposit,
     isLoading: pricingLoading,
@@ -27,9 +26,9 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
   const formatDate = (dateStr: string) => {
     if (!dateStr) return "Not set";
     const date = new Date(dateStr);
-    const day = String(date.getDate()).padStart(2, "0");
-    const month = String(date.getMonth() + 1).padStart(2, "0");
-    const year = date.getFullYear();
+    const day = String(date.getUTCDate()).padStart(2, "0");
+    const month = String(date.getUTCMonth() + 1).padStart(2, "0");
+    const year = date.getUTCFullYear();
     return `${day}/${month}/${year}`;
   };
 
@@ -100,26 +99,23 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
     },
   ];
 
-  // Loading state
   if (pricingLoading) {
     return (
-      <div className="space-y-8">
+      <div className="stack-lg">
         <div className="text-center">
-          <h2 className="text-2xl font-heading font-bold">
-            Review Your Booking
-          </h2>
+          <h2 className="heading-sm">Review Your Booking</h2>
           <p className="text-muted-foreground text-sm">Loading pricing...</p>
         </div>
-        <div className="h-40 bg-gray-200 rounded-xl animate-pulse" />
+        <div className="h-40 bg-muted rounded-xl animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
+    <div className="stack-lg">
       {/* Header */}
       <div className="text-center">
-        <h2 className="text-2xl font-heading font-bold">Review Your Booking</h2>
+        <h2 className="heading-sm">Review Your Booking</h2>
         <p className="text-muted-foreground text-sm">
           Please verify all details before submitting
         </p>
@@ -143,7 +139,7 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
       </div>
 
       {/* Sections */}
-      <div className="space-y-6">
+      <div className="stack-md">
         {sections.map((section) => (
           <div
             key={section.title}
@@ -151,7 +147,7 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
           >
             <div className="flex items-center gap-3 p-4 border-b bg-muted/20">
               <section.icon className="h-5 w-5 text-primary" />
-              <h3 className="font-heading font-semibold">{section.title}</h3>
+              <h3 className="heading-card">{section.title}</h3>
             </div>
             <div className="grid md:grid-cols-2 gap-2 p-4">
               {section.items.map((item) => (
@@ -171,7 +167,7 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
       </div>
 
       {/* Terms & Submit */}
-      <div className="space-y-4 pt-4 border-t">
+      <div className="stack-md pt-4 border-t">
         <div className="flex items-start gap-3">
           <input
             type="checkbox"
@@ -186,11 +182,12 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
           </label>
         </div>
 
-        <button
+        <Button
           type="button"
           onClick={onConfirm}
           disabled={isLoading || !form.watch("termsAccepted")}
-          className="w-full py-3.5 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          size="lg"
+          className="w-full gap-2"
         >
           {isLoading ? (
             <>
@@ -203,7 +200,7 @@ export function Step4Review({ form, onConfirm, isLoading }: Step4ReviewProps) {
               Confirm & Submit Booking
             </>
           )}
-        </button>
+        </Button>
       </div>
     </div>
   );

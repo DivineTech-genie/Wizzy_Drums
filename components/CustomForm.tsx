@@ -49,7 +49,9 @@ export function CustomInputField<T extends FieldValues = FieldValues>({
               placeholder={placeholder}
               aria-invalid={hasError}
               autoComplete="on"
-              className="w-full px-4 py-2.5 rounded-xl border bg-background focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
+              className={["input-base", hasError ? "input-error" : ""]
+                .filter(Boolean)
+                .join(" ")}
               {...field}
               onBlur={(e) => {
                 if (onBlur) {

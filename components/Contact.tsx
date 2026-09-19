@@ -190,7 +190,7 @@ export default function ContactPage() {
                       id="name"
                       placeholder="John Doe"
                       {...register("name")}
-                      className={errors.name ? "border-destructive" : ""}
+                      className={`input-base ${errors.name ? "input-error" : ""}`}
                     />
                     {errors.name && (
                       <p className="text-xs text-destructive">
@@ -205,7 +205,7 @@ export default function ContactPage() {
                       type="email"
                       placeholder="john@example.com"
                       {...register("email")}
-                      className={errors.email ? "border-destructive" : ""}
+                      className={`input-base ${errors.email ? "input-error" : ""}`}
                     />
                     {errors.email && (
                       <p className="text-xs text-destructive">
@@ -221,7 +221,7 @@ export default function ContactPage() {
                     id="subject"
                     placeholder="Booking inquiry"
                     {...register("subject")}
-                    className={errors.subject ? "border-destructive" : ""}
+                    className={`input-base ${errors.subject ? "input-error" : ""}`}
                   />
                   {errors.subject && (
                     <p className="text-xs text-destructive">
@@ -237,7 +237,7 @@ export default function ContactPage() {
                     placeholder="Tell me about your event..."
                     rows={5}
                     {...register("message")}
-                    className={errors.message ? "border-destructive" : ""}
+                    className={`textarea-base ${errors.message ? "input-error" : ""}`}
                   />
                   {errors.message && (
                     <p className="text-xs text-destructive">
